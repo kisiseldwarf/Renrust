@@ -7,7 +7,7 @@ pub struct Core{
     pub height:u32,
     pub fullscreen:bool,
     pub canvas:render::Canvas<video::Window>,
-    pub layers:display::Layers,
+    pub layers:graphics::Layers,
 }
 
 pub struct CoreBuilder{
@@ -15,7 +15,7 @@ pub struct CoreBuilder{
     pub height:Option<u32>,
     pub fullscreen:Option<bool>,
     pub canvas:Option<render::Canvas<video::Window>>,
-    pub layers:Option<display::Layers>,
+    pub layers:Option<graphics::Layers>,
 }
 
 impl CoreBuilder{
@@ -40,7 +40,7 @@ impl CoreBuilder{
         self
     }
 
-    pub fn layers(mut self:CoreBuilder, l:display::Layers) -> CoreBuilder{
+    pub fn layers(mut self:CoreBuilder, l:graphics::Layers) -> CoreBuilder{
         self.layers = Some(l);
         self
     }

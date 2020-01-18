@@ -1,6 +1,7 @@
 mod character;
 mod display;
 mod core;
+mod graphics;
 
 extern crate sdl2;
 use std::path::*;
@@ -17,10 +18,9 @@ fn run(builder:core::CoreBuilder){
 
 //Appellé toutes les frames par ::display
 pub fn update(mut core:&mut core::Core){
-    display::show(&mut core,Path::new("/home/kisis/test.bmp"),1);
+    display::show(&mut core,Path::new("/home/kisis/test.bmp"),0);
     display::show(&mut core,Path::new("/home/kisis/0-1.bmp"),1);
     display::show(&mut core,Path::new("/home/kisis/0-0.bmp"),1);
-    println!("{:#?}",core.layers.layers);
 }
 
 fn main() {

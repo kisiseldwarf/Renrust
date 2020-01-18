@@ -4,13 +4,7 @@ use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use std::path::PathBuf;
 use std::path::Path;
-// use crate::graphics::*;
-
-const LAYERS_NB : usize = 5;
-
-pub struct Layers{
-    pub layers: [Vec<PathBuf>;LAYERS_NB],
-}
+use crate::*;
 
 
 // fn scene(img: String){
@@ -19,7 +13,8 @@ pub struct Layers{
 
 //Ici, on ajoute juste ajouter dans le Store
 pub fn show(core:&mut crate::core::Core,path:&Path,layer:usize){
-    core.layers.layers[layer].push(path.to_path_buf());
+    let image = graphics::Image::new().path(path.to_path_buf());
+    core.layers.layers[layer].push(image);
 }
 
 pub fn draw_img(canvas: &mut render::Canvas<video::Window>, path: &Path){
@@ -64,8 +59,8 @@ pub fn start(builder: crate::core::CoreBuilder){
     let canvas = build_canvas(window, Color::RGB(255,255,255));
 
     //Initialisation Core
-    let mut core = builder.canvas(canvas).layers(Layers{
-        layers: [Vec::<PathBuf>::new(),Vec::<PathBuf>::new(),Vec::<PathBuf>::new(),Vec::<PathBuf>::new(),Vec::<PathBuf>::new()],
+    let mut core = builder.canvas(canvas).layers(graphics::Layers{
+        layers: [Vec::<graphics::Image>::new(),Vec::<graphics::Image>::new(),Vec::<graphics::Image>::new(),Vec::<graphics::Image>::new(),Vec::<graphics::Image>::new()],
     }).build();
 
     //Affichage du canvas
@@ -88,7 +83,7 @@ pub fn start(builder: crate::core::CoreBuilder){
         crate::update(&mut core);
         for i in core.layers.layers.iter(){
             for j in i.iter(){
-                draw_img(&mut core.canvas,j);
+                draw_img(&mut core.canvas,&j.path.as_ref().expect("All Images should have a Path."));
             }
         }
         // draw_layers(&mut core);
