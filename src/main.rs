@@ -20,7 +20,7 @@ fn run(builder:core::CoreBuilder){
 
 //Appellé avant l'entrée en boucle engloabante par ::display
 pub fn init(mut core: &mut core::Core){
-    let image = &graphics::Image::new().path(Path::new("/home/kisis/0-0.bmp").to_path_buf()).resize(3).center(core.canvas.viewport());
+    let image = &graphics::sprite::Sprite::new().path(Path::new("/home/kisis/0-0.bmp").to_path_buf()).resize(3).center(core.canvas.viewport());
     // display::show(&mut core,&graphics::Image::new().path(Path::new("/home/kisis/test.bmp").to_path_buf()).pos(50,50),1);
     // display::show(&mut core,&graphics::Image::new().path(Path::new("/home/kisis/0-1.bmp").to_path_buf()).pos(500,500),4);
     display::show(&mut core,image,1);
