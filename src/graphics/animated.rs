@@ -1,19 +1,20 @@
 use std::*;
 use super::*;
 
-const DEFAULT_FPS : u32 = 5;
+const DEFAULT_FRAMESPEED : u32 = 500;
 
 #[derive(Clone)]
 pub struct Animated{
     frames:Vec<sprite::Sprite>,
     current:usize,
-    fps:u32,
+    framespeed:u32,
+    frames_elapsed:u32,
 }
 
 pub struct AnimatedBuilder{
     frames:Option<Vec<sprite::Sprite>>,
     current:Option<usize>,
-    fps:Option<u32>,
+    framespeed:Option<u32>,
 }
 
 impl AnimatedBuilder{
@@ -21,7 +22,7 @@ impl AnimatedBuilder{
         let res = AnimatedBuilder{
             frames:None,
             current:Some(0),
-            fps:None,
+            framespeed:None,
         };
         res
     }
@@ -29,22 +30,23 @@ impl AnimatedBuilder{
         self.frames = Some(frames);
         self
     }
-    pub fn fps(mut self, fps:u32)->AnimatedBuilder{
-        self.fps = Some(fps);
+    pub fn framespeed(mut self, fps:u32)->AnimatedBuilder{
+        self.framespeed = Some(fps);
         self
     }
     pub fn build(mut self)->Animated{
         let mut frames;
-        let mut fps = DEFAULT_FPS;
+        let mut framespeed = DEFAULT_FRAMESPEED;
 
         frames = self.frames.expect("An Animated must have frames");
-        if self.fps.is_some(){
-            fps = self.fps.unwrap();
+        if self.framespeed.is_some(){
+            framespeed = self.framespeed.unwrap();
         }
         let res = Animated{
             frames,
             current:0,
-            fps,
+            framespeed,
+            frames_elapsed:0,
         };
         res
     }
@@ -52,6 +54,13 @@ impl AnimatedBuilder{
 
 impl Drawable for Animated{
     fn draw(self:&mut Animated, canvas: &mut render::Canvas<video::Window>){
+        if(self.frames_elapsed != self.framespeed){
+            self.frames_elapsed += 1;
+            self.frames[self.current].draw(canvas);
+            return;
+        }
+        self.frames_elapsed = 0;
+
         if self.current == self.frames.len()-1 {
             self.current = 0;
         } else {
@@ -66,7 +75,7 @@ impl Animated{
         let res = AnimatedBuilder{
             frames:None,
             current:Some(0),
-            fps:None,
+            framespeed:None,
         };
         res
     }
