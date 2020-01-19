@@ -13,7 +13,7 @@ use std::ops::Deref;
 //Ici, on ajoute juste dans les layers
 //Show crée une nouvelle Image à chaque appel, même sur le même chemin
 //POUR METTRE UNE IMAGE EN PLEIN ECRAN, METTRE SON WIDTH & SON HEIGHT A LA TAILLE DU VIEWPORT
-pub fn show(core:&mut crate::core::Core,image:&graphics::sprite::Sprite,layer:usize){
+pub fn show(core:&mut crate::core::Core,image:&graphics::animated::Animated,layer:usize){
     let this_image = image.clone();
     let my_box = std::boxed::Box::new(this_image);
     core.layers.layers[layer].push(my_box);
@@ -79,7 +79,9 @@ pub fn start(builder: crate::core::CoreBuilder){
         //Boucle principale
         core.canvas.clear(); //On efface tout
         crate::update(&mut core); //On appelle la fonction d'update logique du jeu
-        for lay in core.layers.layers.iter_mut(){ //On dessine tous les calques
+
+        //On dessine tous les calques
+        for lay in core.layers.layers.iter_mut(){
             for img in lay.iter_mut(){
                 img.as_mut().draw(&mut core.canvas);
             }

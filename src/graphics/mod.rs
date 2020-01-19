@@ -8,15 +8,8 @@ use sdl2::*;
 const LAYERS_NB : usize = 5;
 
 //Any graphics that can draw itself
-pub trait Drawable{
+pub trait Drawable {
     fn draw(&mut self, canvas: &mut render::Canvas<video::Window>);
-    fn get_path<'a>(&'a self)->&'a path::PathBuf;
-    fn get_height(&self) -> u32;
-    fn get_width(&self) -> u32;
-    fn get_pos(&self) -> (u32,u32);
-    fn has_sp_height(&self) -> bool;
-    fn has_sp_width(&self) -> bool;
-    fn has_sp_pos(&self) -> bool;
 }
 
 //Any graphics that can position itself

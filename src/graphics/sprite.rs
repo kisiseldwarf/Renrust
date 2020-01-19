@@ -20,13 +20,13 @@ impl super::Drawable for Sprite{
         let mut y = 0;
         let mut width = surface.width();
         let mut height = surface.height();
-        if self.has_sp_width()
-            { width = self.get_width(); }
-        if self.has_sp_height()
-            { height = self.get_height(); }
-        if self.has_sp_pos(){
-             x = self.get_pos().0 as i32;
-             y = self.get_pos().1 as i32;
+        if self.width.is_some()
+            { width = self.width.unwrap(); }
+        if self.height.is_some()
+            { height = self.height.unwrap(); }
+        if self.pos.is_some(){
+             x = self.pos.unwrap().0 as i32;
+             y = self.pos.unwrap().1 as i32;
          }
         let rect = rect::Rect::new(
             x,
@@ -40,31 +40,6 @@ impl super::Drawable for Sprite{
         let texture = texture_creator.create_texture_from_surface(surface).unwrap();
         canvas.copy(&texture,None,None).unwrap();
         canvas.set_viewport(old);
-    }
-
-    fn get_path<'a>(self:&'a Sprite)->&'a path::PathBuf{
-        &self.path.as_ref().expect("All Sprites should have a Path.")
-    }
-    fn get_width(&self) -> u32{
-        let res = self.width.unwrap();
-        res
-    }
-    fn get_height(&self) -> u32{
-        let res = self.height.unwrap();
-        res
-    }
-    fn get_pos(&self) -> (u32,u32){
-        let res = self.pos.unwrap();
-        res
-    }
-    fn has_sp_width(&self) -> bool{
-        self.width.is_some()
-    }
-    fn has_sp_height(&self) -> bool{
-        self.height.is_some()
-    }
-    fn has_sp_pos(&self) -> bool{
-        self.pos.is_some()
     }
 }
 
@@ -93,6 +68,9 @@ impl Sprite{
     pub fn pos(mut self:Sprite,x:u32,y:u32)->Sprite{
         self.pos = Some((x,y));
         self
+    }
+    fn get_path<'a>(self:&'a Sprite)->&'a path::PathBuf{
+        &self.path.as_ref().expect("All Sprites should have a Path.")
     }
 }
 
