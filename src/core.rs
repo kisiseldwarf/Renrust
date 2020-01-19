@@ -26,7 +26,6 @@ impl CoreBuilder{
 
     pub fn width(mut self:CoreBuilder, w:u32) -> CoreBuilder{
         self.width = Some(w);
-        println!("width : {}",self.width.unwrap());
         self
     }
 

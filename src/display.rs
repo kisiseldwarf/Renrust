@@ -1,27 +1,55 @@
 use sdl2::*;
 use sdl2::pixels::Color;
+use sdl2::pixels::*;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use std::path::PathBuf;
 use std::path::Path;
 use crate::*;
-
+use crate::graphics::Drawable;
+use image::*;
 
 // fn scene(img: String){
 //
 // }
 
-//Ici, on ajoute juste ajouter dans le Store
-pub fn show(core:&mut crate::core::Core,path:&Path,layer:usize){
-    let image = graphics::Image::new().path(path.to_path_buf());
-    core.layers.layers[layer].push(image);
+//Ici, on ajoute juste dans les layers
+//Show crée une nouvelle Image à chaque appel, même sur le même chemin
+//POUR METTRE UNE IMAGE EN PLEIN ECRAN, METTRE SON WIDTH & SON HEIGHT A LA TAILLE DU VIEWPORT
+pub fn show(core:&mut crate::core::Core,image:&graphics::Image,layer:usize){
+    let this_image = image.clone();
+    core.layers.layers[layer].push(this_image);
 }
 
-pub fn draw_img(canvas: &mut render::Canvas<video::Window>, path: &Path){
-    let surface = surface::Surface::load_bmp(path).unwrap();
+//Dessine une image en fonction d'un Path
+fn draw_img(canvas: &mut render::Canvas<video::Window>, img: &graphics::Image){
+    // let sp = image::open(img.get_path()).unwrap();
+    // let mut image = sp.raw_pixels();
+    // let surface = surface::Surface::from_data(&mut image,sp.width(),sp.height(),600,pixels::PixelFormatEnum::ARGB8888).unwrap();
+    let surface = surface::Surface::load_bmp(img.get_path()).unwrap();
+    let mut x = 0;
+    let mut y = 0;
+    let mut width = surface.width();
+    let mut height = surface.height();
+    if img.width.is_some()
+        { width = img.width.unwrap(); }
+    if img.height.is_some()
+        { height = img.height.unwrap(); }
+    if img.pos.is_some(){
+         x = img.pos.unwrap().0 as i32;
+         y = img.pos.unwrap().1 as i32;
+     }
+    let rect = rect::Rect::new(
+        x,
+        y,
+        width,
+        height,
+    );
+    let old = canvas.viewport();
+    canvas.set_viewport(rect);
     let texture_creator = canvas.texture_creator();
     let texture = texture_creator.create_texture_from_surface(surface).unwrap();
     canvas.copy(&texture,None,None).unwrap();
+    canvas.set_viewport(old);
 }
 
 // fn say(text:String){
@@ -52,7 +80,7 @@ pub fn start(builder: crate::core::CoreBuilder){
     let mut event_pump = sdl_context.event_pump().unwrap();
 
     //Création de la fenêtre
-    let window = build_window(&video_subsystem,"renrust",builder.width.unwrap(),builder.height.unwrap(),false);
+    let window = build_window(&video_subsystem,"renrust",builder.width.unwrap(),builder.height.unwrap(),builder.fullscreen.unwrap());
 
     //Création du canvas a partir de la fenêtre
     //window n'est plus utilisable après ça
@@ -65,6 +93,9 @@ pub fn start(builder: crate::core::CoreBuilder){
 
     //Affichage du canvas
     core.canvas.present();
+
+    //Appel de init()
+    crate::init(&mut core);
 
     //Boucle englobante
     'mainloop: loop {
@@ -79,14 +110,14 @@ pub fn start(builder: crate::core::CoreBuilder){
         }
 
         //Boucle principale
-        core.canvas.clear();
-        crate::update(&mut core);
-        for i in core.layers.layers.iter(){
-            for j in i.iter(){
-                draw_img(&mut core.canvas,&j.path.as_ref().expect("All Images should have a Path."));
+        core.canvas.clear(); //On efface tout
+        crate::update(&mut core); //On appelle la fonction d'update logique du jeu
+        for lay in &mut core.layers.layers.iter(){ //On dessine tous les calques
+            for img in &mut lay.iter(){
+                // img.draw(&mut core.canvas);
+                draw_img(&mut core.canvas,img);
             }
         }
-        // draw_layers(&mut core);
         core.canvas.present();
     }
 }
