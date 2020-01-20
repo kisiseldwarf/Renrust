@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use image::GenericImageView;
 
 //Those are options types to have a none value, since not all Sprites must implements every attributes
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 pub struct Sprite{
     path:Option<PathBuf>,
     pub width:Option<u32>,
@@ -34,11 +34,9 @@ impl super::Drawable for Sprite{
             height,
         );
         let old = canvas.viewport();
-        // canvas.set_viewport(rect);
         let texture_creator = canvas.texture_creator();
         let texture = texture_creator.create_texture_from_surface(surface).unwrap();
         canvas.copy(&texture,None,rect).unwrap();
-        // canvas.set_viewport(old);
     }
 }
 
@@ -84,6 +82,14 @@ impl super::Sizeable for Sprite{
             self.width = Some((width * percentage) as u32);
             self.height = Some((height * percentage) as u32);
         }
+        self
+    }
+    fn width(mut self:Sprite,w:u32)->Sprite{
+        self.width = Some(w);
+        self
+    }
+    fn height(mut self:Sprite,h:u32)->Sprite{
+        self.height = Some(h);
         self
     }
 }

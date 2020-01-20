@@ -29,7 +29,7 @@ pub fn init(mut core: &mut core::Core){
     let frame5 = graphics::load(Path::new("/home/kisis/animations/objection-0047.bmp"));
     let bg = graphics::load(Path::new("/home/kisis/renrust/bg.bmp"));
     let animated = graphics::animated::Animated::new().frames(vec![frame1,frame2,frame3,frame4,frame5]).build();
-    // display::scene(&mut core,&bg);
+    display::scene(&mut core,&bg);
     display::show(&mut core,&animated,1);
 }
 
@@ -39,8 +39,5 @@ pub fn update(mut core:&mut core::Core){
 
 fn main() {
     let mut cb = core::core_builder().width(WIDTH).height(HEIGHT);
-    if FULLSCREEN {
-        cb = cb.fullscreen();
-    }
     run(cb);
 }

@@ -16,12 +16,6 @@ pub fn load(src: &Path) -> sprite::Sprite{
 //Any graphics that can draw itself
 pub trait Drawable {
     fn draw(&mut self, canvas: &mut render::Canvas<video::Window>);
-    // fn width(); //Change width
-    // fn height(); //Change height
-    // fn path(); //Change path
-    // fn get_width(); //Return width
-    // fn get_height(); //return height
-    // fn get_path(); //return path
 }
 
 //Any graphics that can position itself
@@ -42,9 +36,11 @@ pub trait Positionable{
 pub trait Sizeable{
     //1 = 100%
     fn resize(self,percentage: f32) -> Self;
+    fn width(self,w:u32)->Self;
+    fn height(self,h:u32)->Self;
 }
 
 //layers are just a fixed collection (array) of an unknown number of Drawable
 pub struct Layers{
-    pub layers: [Vec<Box<dyn Drawable>>;LAYERS_NB],
+    pub layers: Vec<Vec<Box<Drawable>>>,
 }

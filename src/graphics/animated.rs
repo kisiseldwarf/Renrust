@@ -3,7 +3,7 @@ use super::*;
 
 const DEFAULT_FRAMESPEED : u32 = 2;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Animated{
     frames:Vec<sprite::Sprite>,
     current:usize,

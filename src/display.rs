@@ -5,20 +5,20 @@ use crate::*;
 use crate::graphics::Drawable;
 use std::ops::Deref;
 
-//To Do
-// pub fn scene<T: graphics::Drawable + std::clone::Clone>(core:&mut crate::core::Core, img: &T){
-//     let mut this_image = img.clone();
-//     let mut this_image = this_image.width(core.canvas.viewport().width());
-//     let mut this_image = this_image.height(core.canvas.viewport().height());
-//     let my_box = std::boxed::Box::new(this_image);
-//     core.layers.layers[0].push(my_box);
-// }
+//Ajout d'une scène (image prenant toute la dimension de l'écran)
+pub fn scene<T: Drawable + std::clone::Clone + Sizeable + 'static>(core:&mut crate::core::Core, img: &T){
+    let mut this_image = img.clone();
+    let mut this_image = this_image.width(core.canvas.viewport().width());
+    let mut this_image = this_image.height(core.canvas.viewport().height());
+    let my_box = std::boxed::Box::new(this_image);
+    core.layers.layers[0].push(my_box);
+}
 
 //Ici, on ajoute juste dans les layers
 //Show crée une nouvelle Image à chaque appel, même sur le même chemin
 //POUR METTRE UNE IMAGE EN PLEIN ECRAN, METTRE SON WIDTH & SON HEIGHT A LA TAILLE DU VIEWPORT
-pub fn show<T: graphics::Drawable>(core:&mut crate::core::Core,image:&T,layer:usize){
-    let this_image = image.clone();
+pub fn show<T: Drawable + std::clone::Clone + 'static>(core:&mut crate::core::Core,image:&T,layer:usize){
+    let this_image : T = image.clone();
     let my_box = std::boxed::Box::new(this_image);
     core.layers.layers[layer].push(my_box);
 }
@@ -35,7 +35,7 @@ pub fn start(builder: crate::core::CoreBuilder){
     let mut event_pump = sdl_context.event_pump().unwrap();
 
     //Création de la fenêtre
-    let window = build_window(&video_subsystem,"renrust",builder.width.unwrap(),builder.height.unwrap(),builder.fullscreen.unwrap());
+    let window = build_window(&video_subsystem,"renrust",1280,720,true);
 
     //Création du canvas a partir de la fenêtre
     //window n'est plus utilisable après ça
@@ -43,7 +43,7 @@ pub fn start(builder: crate::core::CoreBuilder){
 
     //Initialisation Core
     let mut core = builder.canvas(canvas).layers(graphics::Layers{
-        layers: [Vec::<std::boxed::Box<dyn Drawable>>::new(),Vec::<std::boxed::Box<dyn Drawable>>::new(),Vec::<std::boxed::Box<dyn Drawable>>::new(),Vec::<std::boxed::Box<dyn Drawable>>::new(),Vec::<std::boxed::Box<dyn Drawable>>::new()],
+        layers: vec![Vec::<std::boxed::Box<Drawable>>::new(),Vec::<std::boxed::Box<Drawable>>::new(),Vec::<std::boxed::Box<Drawable>>::new(),Vec::<std::boxed::Box<Drawable>>::new(),Vec::<std::boxed::Box<dyn Drawable>>::new()],
     }).build();
 
     //Affichage du canvas
@@ -79,7 +79,6 @@ pub fn start(builder: crate::core::CoreBuilder){
 }
 
 /* SDL2 Administration */
-
 fn build_window(video_subsystem:&sdl2::VideoSubsystem,title:&str,width:u32,height:u32,fullscreen:bool) -> sdl2::video::Window {
     let mut window = video_subsystem.window(title, width, height);
     if fullscreen

@@ -2,9 +2,9 @@ use crate::*;
 use sdl2::*;
 use std::*;
 
-const DEFAULT_WIDTH : u32 = 800;
-const DEFAULT_HEIGHT : u32 = 600;
-const DEFAULT_FULLSCREEN : bool = true;
+const DEFAULT_WIDTH : u32 = 200;
+const DEFAULT_HEIGHT : u32 = 200;
+const DEFAULT_FULLSCREEN : bool = false;
 
 pub struct Core{
     pub width:u32,
