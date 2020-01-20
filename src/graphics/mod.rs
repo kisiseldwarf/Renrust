@@ -3,13 +3,25 @@ pub mod animated;
 
 use std::*;
 use sdl2::*;
+use path::Path;
 
 //Only 5 layers are available. But for a game, it should be more than enough
 const LAYERS_NB : usize = 5;
 
+pub fn load(src: &Path) -> sprite::Sprite{
+    let res = sprite::Sprite::new().path(src.to_path_buf());
+    res
+}
+
 //Any graphics that can draw itself
 pub trait Drawable {
     fn draw(&mut self, canvas: &mut render::Canvas<video::Window>);
+    // fn width(); //Change width
+    // fn height(); //Change height
+    // fn path(); //Change path
+    // fn get_width(); //Return width
+    // fn get_height(); //return height
+    // fn get_path(); //return path
 }
 
 //Any graphics that can position itself
@@ -20,16 +32,16 @@ pub trait Positionable{
     fn right(self, viewport: rect::Rect) -> Self;
     fn downleft(self, viewport: rect::Rect) -> Self;
     fn downright(self, viewport: rect::Rect) -> Self;
-    fn margeleft(self, marge: u32) -> Self;
-    fn margeright(self, marge: u32) -> Self;
-    fn margetop(self, marge: u32) -> Self;
-    fn margedown(self, marge: u32) -> Self;
+    fn margeleft(self, marge: u32) -> Self; //replace by xpos (entre 0 et 1 : pourcentage par rapport à l'écran, sinon pixel absolus) To do
+    fn margeright(self, marge: u32) -> Self; //replace by xpos
+    fn margetop(self, marge: u32) -> Self; //replace by ypos (same que xpos)
+    fn margedown(self, marge: u32) -> Self; //replace by ypos
 }
 
 //Any graphics that can resize itself
 pub trait Sizeable{
     //1 = 100%
-    fn resize(self,percentage: u32) -> Self;
+    fn resize(self,percentage: f32) -> Self;
 }
 
 //layers are just a fixed collection (array) of an unknown number of Drawable

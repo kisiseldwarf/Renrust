@@ -8,6 +8,7 @@ use std::path::*;
 use std::option::*;
 use graphics::Positionable;
 use graphics::Sizeable;
+use std::path::Path;
 
 const WIDTH : u32 = 1280;
 const HEIGHT : u32 = 720;
@@ -20,9 +21,15 @@ fn run(builder:core::CoreBuilder){
 
 //Appellé avant l'entrée en boucle engloabante par ::display
 pub fn init(mut core: &mut core::Core){
-    let frame1 = graphics::sprite::Sprite::new().path(Path::new("/home/kisis/0-0.bmp").to_path_buf()).center(core.canvas.viewport());
-    let frame2 = graphics::sprite::Sprite::new().path(Path::new("/home/kisis/0-1.bmp").to_path_buf()).center(core.canvas.viewport());
-    let animated = graphics::animated::Animated::new().frames(vec![frame1,frame2]).build();
+    //configure position on animated object is much simpler
+    let frame1 = graphics::load(Path::new("/home/kisis/animations/objection-0043.bmp"));
+    let frame2 = graphics::load(Path::new("/home/kisis/animations/objection-0044.bmp"));
+    let frame3 = graphics::load(Path::new("/home/kisis/animations/objection-0045.bmp"));
+    let frame4 = graphics::load(Path::new("/home/kisis/animations/objection-0046.bmp"));
+    let frame5 = graphics::load(Path::new("/home/kisis/animations/objection-0047.bmp"));
+    let bg = graphics::load(Path::new("/home/kisis/renrust/bg.bmp"));
+    let animated = graphics::animated::Animated::new().frames(vec![frame1,frame2,frame3,frame4,frame5]).build();
+    // display::scene(&mut core,&bg);
     display::show(&mut core,&animated,1);
 }
 

@@ -1,4 +1,3 @@
-use sdl2::*;
 use sdl2::pixels::Color;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
@@ -6,14 +5,19 @@ use crate::*;
 use crate::graphics::Drawable;
 use std::ops::Deref;
 
-// fn scene(img: String){
-//
+//To Do
+// pub fn scene<T: graphics::Drawable + std::clone::Clone>(core:&mut crate::core::Core, img: &T){
+//     let mut this_image = img.clone();
+//     let mut this_image = this_image.width(core.canvas.viewport().width());
+//     let mut this_image = this_image.height(core.canvas.viewport().height());
+//     let my_box = std::boxed::Box::new(this_image);
+//     core.layers.layers[0].push(my_box);
 // }
 
 //Ici, on ajoute juste dans les layers
 //Show crée une nouvelle Image à chaque appel, même sur le même chemin
 //POUR METTRE UNE IMAGE EN PLEIN ECRAN, METTRE SON WIDTH & SON HEIGHT A LA TAILLE DU VIEWPORT
-pub fn show(core:&mut crate::core::Core,image:&graphics::animated::Animated,layer:usize){
+pub fn show<T: graphics::Drawable>(core:&mut crate::core::Core,image:&T,layer:usize){
     let this_image = image.clone();
     let my_box = std::boxed::Box::new(this_image);
     core.layers.layers[layer].push(my_box);
@@ -22,22 +26,6 @@ pub fn show(core:&mut crate::core::Core,image:&graphics::animated::Animated,laye
 // fn say(text:String){
 //
 // }
-
-fn build_window(video_subsystem:&sdl2::VideoSubsystem,title:&str,width:u32,height:u32,fullscreen:bool) -> sdl2::video::Window {
-    let mut window = video_subsystem.window(title, width, height);
-    if fullscreen
-        { window.fullscreen(); }
-    let window = window.build()
-        .unwrap();
-    window
-}
-
-fn build_canvas(window:sdl2::video::Window,background:Color) -> sdl2::render::Canvas<sdl2::video::Window>{
-    let mut canvas = window.into_canvas().build().unwrap();
-    canvas.set_draw_color(background);
-    canvas.clear();
-    canvas
-}
 
 pub fn start(builder: crate::core::CoreBuilder){
 
@@ -88,4 +76,22 @@ pub fn start(builder: crate::core::CoreBuilder){
         }
         core.canvas.present();
     }
+}
+
+/* SDL2 Administration */
+
+fn build_window(video_subsystem:&sdl2::VideoSubsystem,title:&str,width:u32,height:u32,fullscreen:bool) -> sdl2::video::Window {
+    let mut window = video_subsystem.window(title, width, height);
+    if fullscreen
+    { window.fullscreen(); }
+    let window = window.build()
+    .unwrap();
+    window
+}
+
+fn build_canvas(window:sdl2::video::Window,background:Color) -> sdl2::render::Canvas<sdl2::video::Window>{
+    let mut canvas = window.into_canvas().build().unwrap();
+    canvas.set_draw_color(background);
+    canvas.clear();
+    canvas
 }

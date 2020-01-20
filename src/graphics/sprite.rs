@@ -2,7 +2,6 @@ use std::*;
 use sdl2::*;
 use std::path::PathBuf;
 use image::GenericImageView;
-use super::Drawable;
 
 //Those are options types to have a none value, since not all Sprites must implements every attributes
 #[derive(Clone)]
@@ -35,11 +34,11 @@ impl super::Drawable for Sprite{
             height,
         );
         let old = canvas.viewport();
-        canvas.set_viewport(rect);
+        // canvas.set_viewport(rect);
         let texture_creator = canvas.texture_creator();
         let texture = texture_creator.create_texture_from_surface(surface).unwrap();
-        canvas.copy(&texture,None,None).unwrap();
-        canvas.set_viewport(old);
+        canvas.copy(&texture,None,rect).unwrap();
+        // canvas.set_viewport(old);
     }
 }
 
@@ -75,14 +74,15 @@ impl Sprite{
 }
 
 impl super::Sizeable for Sprite{
-    fn resize(mut self, percentage: u32) -> Sprite{
+    fn resize(mut self, percentage: f32) -> Sprite{
         if self.path.is_some(){
             let loaded = image::open(self.get_path()).unwrap();
             let dim = loaded.dimensions();
-            let height = dim.0;
-            let width = dim.1;
-            self.width = Some(width * percentage);
-            self.height = Some(height * percentage);
+            let height = dim.0 as f32;
+            let width = dim.1 as f32;
+            println!("width : {:#?} height : {:#?}",self.width,self.height);
+            self.width = Some((width * percentage) as u32);
+            self.height = Some((height * percentage) as u32);
         }
         self
     }
@@ -160,6 +160,8 @@ impl super::Positionable for Sprite{
     fn margeleft(mut self, marge: u32) -> Sprite{
         if self.pos.is_some(){
             self.pos = Some((self.pos.unwrap().0+marge , self.pos.unwrap().1));
+        } else {
+            self.pos = Some((0+marge,0));
         }
         self
     }

@@ -2,6 +2,10 @@ use crate::*;
 use sdl2::*;
 use std::*;
 
+const DEFAULT_WIDTH : u32 = 800;
+const DEFAULT_HEIGHT : u32 = 600;
+const DEFAULT_FULLSCREEN : bool = true;
+
 pub struct Core{
     pub width:u32,
     pub height:u32,
@@ -45,9 +49,9 @@ impl CoreBuilder{
     }
 
     pub fn build(self:CoreBuilder) -> Core{
-        let mut width = 800;
-        let mut height = 600;
-        let mut fullscreen = true;
+        let mut width = DEFAULT_WIDTH;
+        let mut height = DEFAULT_HEIGHT;
+        let mut fullscreen = DEFAULT_FULLSCREEN;
         let mut canvas;
         let mut layers;
 

@@ -1,7 +1,7 @@
 use std::*;
 use super::*;
 
-const DEFAULT_FRAMESPEED : u32 = 500;
+const DEFAULT_FRAMESPEED : u32 = 2;
 
 #[derive(Clone)]
 pub struct Animated{
