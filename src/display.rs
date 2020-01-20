@@ -5,6 +5,10 @@ use crate::*;
 use crate::graphics::Drawable;
 use std::ops::Deref;
 
+const WIDTH : u32 = 1280;
+const HEIGHT : u32 = 720;
+const FULLSCREEN : bool = true;
+
 //Ajout d'une scène (image prenant toute la dimension de l'écran)
 pub fn scene<T: Drawable + std::clone::Clone + Sizeable + 'static>(core:&mut crate::core::Core, img: &T){
     let mut this_image = img.clone();
@@ -17,10 +21,13 @@ pub fn scene<T: Drawable + std::clone::Clone + Sizeable + 'static>(core:&mut cra
 //Ici, on ajoute juste dans les layers
 //Show crée une nouvelle Image à chaque appel, même sur le même chemin
 //POUR METTRE UNE IMAGE EN PLEIN ECRAN, METTRE SON WIDTH & SON HEIGHT A LA TAILLE DU VIEWPORT
-pub fn show<T: Drawable + std::clone::Clone + 'static>(core:&mut crate::core::Core,image:&T,layer:usize){
+pub fn show<T: Drawable + std::clone::Clone + 'static>(core:&mut crate::core::Core,image:&T,index:usize){
+    if index == 0 {
+        return;
+    }
     let this_image : T = image.clone();
     let my_box = std::boxed::Box::new(this_image);
-    core.layers.layers[layer].push(my_box);
+    core.layers.layers[index].push(my_box);
 }
 
 // fn say(text:String){

@@ -2,6 +2,7 @@ use std::*;
 use sdl2::*;
 use std::path::PathBuf;
 use image::GenericImageView;
+use std::path::Path;
 
 //Those are options types to have a none value, since not all Sprites must implements every attributes
 #[derive(Clone,Debug)]
@@ -10,6 +11,11 @@ pub struct Sprite{
     pub width:Option<u32>,
     pub height:Option<u32>,
     pub pos:Option<(u32,u32)>,
+}
+
+pub fn load(src: &Path) -> Sprite{
+    let res = Sprite::new().path(src.to_path_buf());
+    res
 }
 
 impl super::Drawable for Sprite{

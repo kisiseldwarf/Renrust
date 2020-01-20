@@ -17,6 +17,23 @@ pub struct AnimatedBuilder{
     framespeed:Option<u32>,
 }
 
+//Load every *.bmp in a directory and add it to its frames
+pub fn load(src: &Path) -> AnimatedBuilder{
+    let mut frames = Vec::<sprite::Sprite>::new();
+    if src.is_dir(){
+        for entries in std::fs::read_dir(src).unwrap(){
+            let entry = entries.unwrap();
+            let path = entry.path();
+            let ext = path.extension();
+            if ext.is_some() && ext.unwrap() == "bmp"{
+                frames.push(sprite::load(&entry.path()));
+            }
+        }
+    }
+    let res = Animated::new().frames(frames);
+    res
+}
+
 impl AnimatedBuilder{
     pub fn new() -> AnimatedBuilder{
         let res = AnimatedBuilder{

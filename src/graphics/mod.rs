@@ -8,11 +8,6 @@ use path::Path;
 //Only 5 layers are available. But for a game, it should be more than enough
 const LAYERS_NB : usize = 5;
 
-pub fn load(src: &Path) -> sprite::Sprite{
-    let res = sprite::Sprite::new().path(src.to_path_buf());
-    res
-}
-
 //Any graphics that can draw itself
 pub trait Drawable {
     fn draw(&mut self, canvas: &mut render::Canvas<video::Window>);
@@ -40,7 +35,7 @@ pub trait Sizeable{
     fn height(self,h:u32)->Self;
 }
 
-//layers are just a fixed collection (array) of an unknown number of Drawable
+//layers are just a collection of a collection owning an unknown number of Drawable
 pub struct Layers{
     pub layers: Vec<Vec<Box<Drawable>>>,
 }
