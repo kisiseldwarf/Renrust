@@ -40,7 +40,6 @@ impl Drawable for Sprite{
             width,
             height,
         );
-        let old = canvas.viewport();
         let texture_creator = canvas.texture_creator();
         let texture = texture_creator.create_texture_from_surface(surface).unwrap();
         canvas.copy(&texture,None,rect).unwrap();
@@ -156,8 +155,6 @@ impl Positionable for Sprite{
             let loaded = image::open(self.get_path()).unwrap();
             let dim = loaded.dimensions();
             let height = dim.0 as i32;
-            let width = dim.1 as i32;
-            let view_width = viewport.width() as i32;
             let view_height = viewport.height() as i32;
             pos = Some(( 0, view_height/2 - height/2));
         }
@@ -194,8 +191,6 @@ impl Positionable for Sprite{
             let loaded = image::open(self.get_path()).unwrap();
             let dim = loaded.dimensions();
             let height = dim.0 as i32;
-            let width = dim.1 as i32;
-            let view_width = viewport.width() as i32;
             let view_height = viewport.height() as i32;
             pos = Some((0, view_height/2 - height/2));
         }

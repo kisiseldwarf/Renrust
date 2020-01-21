@@ -29,6 +29,6 @@ pub fn update(mut core:&mut core::Core){
 }
 
 fn main() {
-    let mut cb = core::core_builder().width(WIDTH).height(HEIGHT).fullscreen(FULLSCREEN);
+    let cb = core::core_builder().width(WIDTH).height(HEIGHT).fullscreen(FULLSCREEN);
     run(cb);
 }

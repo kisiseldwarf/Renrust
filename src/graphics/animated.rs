@@ -90,7 +90,7 @@ impl Drawable for Animated{
 
 impl Positionable for AnimatedBuilder{
     fn center(self,viewport: rect::Rect) -> AnimatedBuilder{
-        let mut vec = Vec::<Sprite>::new();
+        let vec = Vec::<Sprite>::new();
         let mut res = AnimatedBuilder{
             frames:Some(vec),
             current:self.current,
@@ -107,7 +107,7 @@ impl Positionable for AnimatedBuilder{
         res
     }
     fn downcenter(self, viewport: rect::Rect) -> AnimatedBuilder{
-        let mut vec = Vec::<Sprite>::new();
+        let vec = Vec::<Sprite>::new();
         let mut res = AnimatedBuilder{
             frames:Some(vec),
             current:self.current,
@@ -124,7 +124,7 @@ impl Positionable for AnimatedBuilder{
         res
     }
     fn left(self,viewport: rect::Rect) -> AnimatedBuilder{
-        let mut vec = Vec::<Sprite>::new();
+        let vec = Vec::<Sprite>::new();
         let mut res = AnimatedBuilder{
             frames:Some(vec),
             current:self.current,
@@ -158,7 +158,7 @@ impl Positionable for AnimatedBuilder{
         res
     }
     fn downleft(self, viewport: rect::Rect) -> AnimatedBuilder{
-        let mut vec = Vec::<Sprite>::new();
+        let vec = Vec::<Sprite>::new();
         let mut res = AnimatedBuilder{
             frames:Some(vec),
             current:self.current,
@@ -175,7 +175,7 @@ impl Positionable for AnimatedBuilder{
         res
     }
     fn downright(self, viewport: rect::Rect) -> AnimatedBuilder{
-        let mut vec = Vec::<Sprite>::new();
+        let vec = Vec::<Sprite>::new();
         let mut res = AnimatedBuilder{
             frames:Some(vec),
             current:self.current,
