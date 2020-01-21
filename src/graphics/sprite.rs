@@ -3,6 +3,7 @@ use sdl2::*;
 use std::path::PathBuf;
 use image::GenericImageView;
 use std::path::Path;
+use super::*;
 
 //Those are options types to have a none value, since not all Sprites must implements every attributes
 #[derive(Clone,Debug)]
@@ -10,7 +11,7 @@ pub struct Sprite{
     path:Option<PathBuf>,
     pub width:Option<u32>,
     pub height:Option<u32>,
-    pub pos:Option<(u32,u32)>,
+    pub pos:Option<(i32,i32)>,
 }
 
 pub fn load(src: &Path) -> Sprite{
@@ -18,7 +19,7 @@ pub fn load(src: &Path) -> Sprite{
     res
 }
 
-impl super::Drawable for Sprite{
+impl Drawable for Sprite{
     fn draw(self:&mut Sprite, canvas: &mut render::Canvas<video::Window>){
         let surface = surface::Surface::load_bmp(self.get_path()).unwrap();
         let mut x = 0;
@@ -30,8 +31,8 @@ impl super::Drawable for Sprite{
         if self.height.is_some()
             { height = self.height.unwrap(); }
         if self.pos.is_some(){
-             x = self.pos.unwrap().0 as i32;
-             y = self.pos.unwrap().1 as i32;
+             x = self.pos.unwrap().0;
+             y = self.pos.unwrap().1;
          }
         let rect = rect::Rect::new(
             x,
@@ -68,7 +69,7 @@ impl Sprite{
         self.height = Some(h);
         self
     }
-    pub fn pos(mut self:Sprite,x:u32,y:u32)->Sprite{
+    pub fn pos(mut self:Sprite,x:i32,y:i32)->Sprite{
         self.pos = Some((x,y));
         self
     }
@@ -77,122 +78,152 @@ impl Sprite{
     }
 }
 
-impl super::Sizeable for Sprite{
+impl Sizeable for Sprite{
     fn resize(mut self, percentage: f32) -> Sprite{
         if self.path.is_some(){
-            let loaded = image::open(self.get_path()).unwrap();
-            let dim = loaded.dimensions();
-            let height = dim.0 as f32;
-            let width = dim.1 as f32;
-            println!("width : {:#?} height : {:#?}",self.width,self.height);
+            let surface = surface::Surface::load_bmp(self.get_path()).unwrap();
+            let height = surface.height() as f32;
+            let width = surface.width() as f32;
             self.width = Some((width * percentage) as u32);
             self.height = Some((height * percentage) as u32);
         }
         self
     }
     fn width(mut self:Sprite,w:u32)->Sprite{
-        self.width = Some(w);
+        let a = w;
+        self.width = Some(a);
         self
     }
     fn height(mut self:Sprite,h:u32)->Sprite{
-        self.height = Some(h);
+        let a = h;
+        self.height = Some(a);
         self
     }
 }
 
-impl super::Positionable for Sprite{
-    fn center(mut self,viewport: rect::Rect)->Sprite{
+impl Positionable for Sprite{
+    fn center(self, viewport: rect::Rect) -> Sprite{
+        let view_width = viewport.width() as i32;
+        let view_height = viewport.height() as i32;
+        let mut pos = self.pos;
         if self.width.is_some() && self.height.is_some(){
-            self.pos = Some((viewport.width()/2 - self.width.unwrap()/2,viewport.height()/2 - self.height.unwrap()/2));
+            let width = self.width.unwrap() as i32;
+            let height = self.height.unwrap() as i32;
+            pos = Some((view_width/2 - width/2,view_height/2 - height/2));
         } else {
             if self.path.is_some(){
-                let loaded = image::open(self.get_path()).unwrap();
-                let dim = loaded.dimensions();
-                let height = dim.0;
-                let width = dim.1;
-                self.pos = Some((viewport.width()/2 - width/2,viewport.height()/2 - height/2));
+                let surface = surface::Surface::load_bmp(self.get_path()).unwrap();
+                let height = surface.height() as i32;
+                let width = surface.width() as i32;
+                pos = Some((view_width/2 - width/2,view_height/2 - height/2));
             }
         }
-        self
+        let res = Sprite{
+            path: self.path,
+            width: self.width,
+            height: self.height,
+            pos,
+        };
+        res
     }
-    fn downcenter(mut self, viewport: rect::Rect)->Sprite{
+    fn downcenter(self, viewport: rect::Rect) -> Sprite{
+        let mut pos = self.pos;
+        let view_width = viewport.width() as i32;
+        let view_height = viewport.height() as i32;
         if self.width.is_some() && self.height.is_some(){
-            self.pos = Some((viewport.width()/2 - self.width.unwrap()/2,viewport.height() - self.height.unwrap()));
+            let width = self.width.unwrap() as i32;
+            let height = self.height.unwrap() as i32;
+            pos = Some((view_width/2 - width/2,view_height - height));
         } else {
             if self.path.is_some(){
-                let loaded = image::open(self.get_path()).unwrap();
-                let dim = loaded.dimensions();
-                let height = dim.0;
-                let width = dim.1;
-                self.pos = Some((viewport.width()/2 - width/2,viewport.height() - height));
+                let surface = surface::Surface::load_bmp(self.get_path()).unwrap();
+                let height = surface.height() as i32;
+                let width = surface.width() as i32;
+                pos = Some((view_width/2 - width/2,view_height - height));
             }
         }
-        self
+        let res = Sprite{
+            path: self.path,
+            width: self.width,
+            height: self.height,
+            pos,
+        };
+        res
     }
-    fn left(mut self,viewport: rect::Rect) -> Sprite{
+    fn left(self, viewport: rect::Rect) -> Sprite{
+        let mut pos = self.pos;
         if self.path.is_some(){
             let loaded = image::open(self.get_path()).unwrap();
             let dim = loaded.dimensions();
-            let height = dim.0;
-            let width = dim.1;
-            self.pos = Some((0,viewport.height()/2 - height/2));
+            let height = dim.0 as i32;
+            let width = dim.1 as i32;
+            let view_width = viewport.width() as i32;
+            let view_height = viewport.height() as i32;
+            pos = Some(( 0, view_height/2 - height/2));
         }
-        self
+        let res = Sprite{
+            path: self.path,
+            width: self.width,
+            height: self.height,
+            pos,
+        };
+        res
     }
-    fn right(mut self, viewport: rect::Rect) -> Sprite{
+    fn right(self, viewport: rect::Rect) -> Sprite{
+        let mut pos = self.pos;
         if self.path.is_some(){
             let loaded = image::open(self.get_path()).unwrap();
             let dim = loaded.dimensions();
-            let height = dim.0;
-            let width = dim.1;
-            self.pos = Some((viewport.width() - width,viewport.height()/2 - height/2));
+            let height = dim.0 as i32;
+            let width = dim.1 as i32;
+            let view_width = viewport.width() as i32;
+            let view_height = viewport.height() as i32;
+            pos = Some((view_width - width, view_height/2 - height/2));
         }
-        self
+        let res = Sprite{
+            path: self.path,
+            width: self.width,
+            height: self.height,
+            pos,
+        };
+        res
     }
-    fn downleft(mut self, viewport: rect::Rect) -> Sprite{
+    fn downleft(self, viewport: rect::Rect) -> Sprite{
+        let mut pos = self.pos;
         if self.path.is_some(){
             let loaded = image::open(self.get_path()).unwrap();
             let dim = loaded.dimensions();
-            let height = dim.0;
-            let width = dim.1;
-            self.pos = Some((0,viewport.height()/2 - height/2));
+            let height = dim.0 as i32;
+            let width = dim.1 as i32;
+            let view_width = viewport.width() as i32;
+            let view_height = viewport.height() as i32;
+            pos = Some((0, view_height/2 - height/2));
         }
-        self
+        let res = Sprite{
+            path: self.path,
+            width: self.width,
+            height: self.height,
+            pos,
+        };
+        res
     }
-    fn downright(mut self, viewport: rect::Rect) -> Sprite{
+    fn downright(self, viewport: rect::Rect) -> Sprite{
+        let mut pos = self.pos;
         if self.path.is_some(){
             let loaded = image::open(self.get_path()).unwrap();
             let dim = loaded.dimensions();
-            let height = dim.0;
-            let width = dim.1;
-            self.pos = Some((viewport.width() - width,viewport.height()/2 - height/2));
+            let height = dim.0 as i32;
+            let width = dim.1 as i32;
+            let view_width = viewport.width() as i32;
+            let view_height = viewport.height() as i32;
+            pos = Some((view_width- width,view_height/2 - height/2));
         }
-        self
-    }
-    fn margeleft(mut self, marge: u32) -> Sprite{
-        if self.pos.is_some(){
-            self.pos = Some((self.pos.unwrap().0+marge , self.pos.unwrap().1));
-        } else {
-            self.pos = Some((0+marge,0));
-        }
-        self
-    }
-    fn margeright(mut self, marge: u32) -> Sprite{
-        if self.pos.is_some(){
-            self.pos = Some((self.pos.unwrap().0-marge , self.pos.unwrap().1));
-        }
-        self
-    }
-    fn margetop(mut self, marge: u32) -> Sprite{
-        if self.pos.is_some(){
-            self.pos = Some((self.pos.unwrap().0 , self.pos.unwrap().1+marge));
-        }
-        self
-    }
-    fn margedown(mut self, marge: u32) -> Sprite{
-        if self.pos.is_some(){
-            self.pos = Some((self.pos.unwrap().0, self.pos.unwrap().1-marge));
-        }
-        self
+        let res = Sprite{
+            path: self.path,
+            width: self.width,
+            height: self.height,
+            pos,
+        };
+        res
     }
 }

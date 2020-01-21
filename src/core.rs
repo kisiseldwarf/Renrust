@@ -23,8 +23,8 @@ pub struct CoreBuilder{
 }
 
 impl CoreBuilder{
-    pub fn fullscreen(mut self:CoreBuilder) -> CoreBuilder{
-        self.fullscreen = Some(true);
+    pub fn fullscreen(mut self:CoreBuilder, is_it:bool) -> CoreBuilder{
+        self.fullscreen = Some(is_it);
         self
     }
 
@@ -52,8 +52,8 @@ impl CoreBuilder{
         let mut width = DEFAULT_WIDTH;
         let mut height = DEFAULT_HEIGHT;
         let mut fullscreen = DEFAULT_FULLSCREEN;
-        let mut canvas;
-        let mut layers;
+        let canvas;
+        let layers;
 
         if self.width.is_some(){
             width = self.width.unwrap();

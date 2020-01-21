@@ -3,17 +3,16 @@ use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use crate::*;
 use crate::graphics::Drawable;
-use std::ops::Deref;
 
 const WIDTH : u32 = 1280;
 const HEIGHT : u32 = 720;
-const FULLSCREEN : bool = true;
+const FULLSCREEN : bool = false;
 
 //Ajout d'une scène (image prenant toute la dimension de l'écran)
 pub fn scene<T: Drawable + std::clone::Clone + Sizeable + 'static>(core:&mut crate::core::Core, img: &T){
-    let mut this_image = img.clone();
-    let mut this_image = this_image.width(core.canvas.viewport().width());
-    let mut this_image = this_image.height(core.canvas.viewport().height());
+    let this_image = img.clone();
+    let this_image = this_image.width(core.canvas.viewport().width());
+    let this_image = this_image.height(core.canvas.viewport().height());
     let my_box = std::boxed::Box::new(this_image);
     core.layers.layers[0].push(my_box);
 }
@@ -42,7 +41,10 @@ pub fn start(builder: crate::core::CoreBuilder){
     let mut event_pump = sdl_context.event_pump().unwrap();
 
     //Création de la fenêtre
-    let window = build_window(&video_subsystem,"renrust",1280,720,true);
+    let window = build_window(&video_subsystem,"renrust",WIDTH,HEIGHT,FULLSCREEN);
+    if builder.width.is_some() && builder.height.is_some() && builder.fullscreen.is_some(){
+        let window = build_window(&video_subsystem,"renrust",builder.width.unwrap(),builder.height.unwrap(),builder.fullscreen.unwrap());
+    }
 
     //Création du canvas a partir de la fenêtre
     //window n'est plus utilisable après ça
@@ -50,7 +52,7 @@ pub fn start(builder: crate::core::CoreBuilder){
 
     //Initialisation Core
     let mut core = builder.canvas(canvas).layers(graphics::Layers{
-        layers: vec![Vec::<std::boxed::Box<Drawable>>::new(),Vec::<std::boxed::Box<Drawable>>::new(),Vec::<std::boxed::Box<Drawable>>::new(),Vec::<std::boxed::Box<Drawable>>::new(),Vec::<std::boxed::Box<dyn Drawable>>::new()],
+        layers: vec![Vec::<std::boxed::Box<dyn Drawable>>::new(),Vec::<std::boxed::Box<dyn Drawable>>::new(),Vec::<std::boxed::Box<dyn Drawable>>::new(),Vec::<std::boxed::Box<dyn Drawable>>::new(),Vec::<std::boxed::Box<dyn Drawable>>::new()],
     }).build();
 
     //Affichage du canvas
