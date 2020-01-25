@@ -19,13 +19,13 @@ fn run(builder:core::CoreBuilder){
 }
 
 //Appellé avant l'entrée en boucle engloabante par ::display
-pub fn init(mut core: &mut core::Core){
+pub fn init(core: &mut core::Core){
     let frame = SpriteBuilder::new(Path::new("/home/kisis/animations/objection-0043.bmp"));
-    show(&mut core,frame,2);
+    show(core,frame,2);
 }
 
 //Appellé toutes les frames par ::display
-pub fn update(mut core:&mut core::Core){
+pub fn update(core:&mut core::Core){
 }
 
 fn main() {
