@@ -3,13 +3,14 @@ use sdl2::event::*;
 use sdl2::keyboard::*;
 use crate::*;
 use crate::graphics::*;
+use crate::core::*;
 
 const WIDTH : u32 = 1280;
 const HEIGHT : u32 = 720;
 const FULLSCREEN : bool = false;
 
 //Ajout d'une scène (image prenant toute la dimension de l'écran)
-pub fn scene<T: Drawable + std::clone::Clone + Sizeable + 'static>(core:&mut crate::core::Core, img: &T){
+pub fn scene<T: Drawable + std::clone::Clone + Sizeable + 'static>(core: &mut Core, img: &T){
     let this_image = img.clone();
     let this_image = this_image.width(core.canvas.viewport().width());
     let this_image = this_image.height(core.canvas.viewport().height());
@@ -19,7 +20,7 @@ pub fn scene<T: Drawable + std::clone::Clone + Sizeable + 'static>(core:&mut cra
 
 //On ajoute juste dans les layers
 //Note : POUR METTRE UNE IMAGE EN PLEIN ECRAN, METTRE SON WIDTH & SON HEIGHT A LA TAILLE DU VIEWPORT
-pub fn show<T: DrawableBuilder>(core: &mut crate::core::Core,image:T,index:usize){
+pub fn show<T: DrawableBuilder>(core: &mut Core, image: &T, index: usize){
     if index == 0 {
         return;
     }

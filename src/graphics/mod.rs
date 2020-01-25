@@ -34,7 +34,7 @@ pub trait Sizeable{
 
 //Any graphics that can build itself
 pub trait DrawableBuilder{
-    fn build(self) -> Box<dyn Drawable>;
+    fn build(&self) -> Box<dyn Drawable>;
 }
 
 

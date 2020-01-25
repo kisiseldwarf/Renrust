@@ -56,9 +56,9 @@ impl SpriteBuilder{
 /* Trait(s) Implementation(s) */
 
 impl DrawableBuilder for SpriteBuilder{
-    fn build(self) -> Box<dyn Drawable>{
+    fn build(&self) -> Box<dyn Drawable>{
         let path = self.path.clone();
-        let surface = Surface::load_bmp(self.path).unwrap();
+        let surface = Surface::load_bmp(&path).unwrap();
         let width = surface.width();
         let height = surface.height();
         let pos = DEFAULT_POS;
