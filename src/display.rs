@@ -20,13 +20,11 @@ pub fn scene<T: Drawable + std::clone::Clone + Sizeable + 'static>(core:&mut cra
 //Ici, on ajoute juste dans les layers
 //Show crée une nouvelle Image à chaque appel, même sur le même chemin
 //POUR METTRE UNE IMAGE EN PLEIN ECRAN, METTRE SON WIDTH & SON HEIGHT A LA TAILLE DU VIEWPORT
-pub fn show<T: Drawable + std::clone::Clone + 'static>(core:&mut crate::core::Core,image:&T,index:usize){
+pub fn show(core:&mut crate::core::Core,image:Box<dyn Drawable>,index:usize){
     if index == 0 {
         return;
     }
-    let this_image : T = image.clone();
-    let my_box = std::boxed::Box::new(this_image);
-    core.layers.layers[index].push(my_box);
+    core.layers.layers[index].push(image);
 }
 
 // fn say(text:String){

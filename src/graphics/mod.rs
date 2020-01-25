@@ -4,24 +4,19 @@ pub mod animated;
 use std::*;
 use sdl2::*;
 use path::Path;
+use std::boxed::Box;
 
 //Any graphics that can draw itself
-pub trait Drawable {
+pub trait Drawable{
     fn draw(&mut self, canvas: &mut render::Canvas<video::Window>);
+    fn get_path(&self)->&Path;
 }
 
 //Any graphics that can position itself
 pub trait Positionable{
     fn center(self,viewport: rect::Rect) -> Self;
     fn downcenter(self, viewport: rect::Rect) -> Self;
-    fn left(self,viewport: rect::Rect) -> Self;
-    fn right(self, viewport: rect::Rect) -> Self;
-    fn downleft(self, viewport: rect::Rect) -> Self;
-    fn downright(self, viewport: rect::Rect) -> Self;
-    // fn margeleft(self, marge: u32) -> Self; //replace by xpos (entre 0 et 1 : pourcentage par rapport à l'écran, sinon pixel absolus) To do
-    // fn margeright(self, marge: u32) -> Self; //replace by xpos
-    // fn margetop(self, marge: u32) -> Self; //replace by ypos (same que xpos)
-    // fn margedown(self, marge: u32) -> Self; //replace by ypos
+    fn get_pos(&self)->(i32,i32);
 }
 
 //Any graphics that can resize itself
@@ -29,6 +24,13 @@ pub trait Sizeable{
     fn resize(self,percentage: f32) -> Self;
     fn width(self,w:u32)->Self;
     fn height(self,h:u32)->Self;
+    fn get_width(&self)->u32;
+    fn get_height(&self)->u32;
+}
+
+//Any graphics that can build itself
+pub trait DrawableBuilder{
+    fn build(self) -> Box<dyn Drawable>;
 }
 
 //layers are just a collection of a collection owning an unknown number of Drawable

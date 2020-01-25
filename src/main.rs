@@ -5,8 +5,9 @@ mod graphics;
 
 extern crate sdl2;
 use std::option::*;
-use graphics::Positionable;
-use graphics::Sizeable;
+use graphics::*;
+use graphics::sprite::*;
+use display::*;
 use std::path::Path;
 
 const WIDTH : u32 = 1280;
@@ -20,8 +21,10 @@ fn run(builder:core::CoreBuilder){
 
 //Appellé avant l'entrée en boucle engloabante par ::display
 pub fn init(mut core: &mut core::Core){
-    let animated = graphics::animated::load(Path::new("/home/kisis/animations")).framespeed(40).center(core.canvas.viewport()).build().resize(0.5);
-    display::show(&mut core,&animated,2);
+    let frame = SpriteBuilder::new(Path::new("/home/kisis/animations/objection-0043.bmp")).build();
+    println!("yo");
+    println!("yo");
+    show(&mut core,frame,2);
 }
 
 //Appellé toutes les frames par ::display
