@@ -1,8 +1,8 @@
-use sdl2::pixels::Color;
-use sdl2::event::Event;
-use sdl2::keyboard::Keycode;
+use sdl2::pixels::*;
+use sdl2::event::*;
+use sdl2::keyboard::*;
 use crate::*;
-use crate::graphics::Drawable;
+use crate::graphics::*;
 
 const WIDTH : u32 = 1280;
 const HEIGHT : u32 = 720;
@@ -17,19 +17,21 @@ pub fn scene<T: Drawable + std::clone::Clone + Sizeable + 'static>(core:&mut cra
     core.layers.layers[0].push(my_box);
 }
 
-//Ici, on ajoute juste dans les layers
-//Show crée une nouvelle Image à chaque appel, même sur le même chemin
-//POUR METTRE UNE IMAGE EN PLEIN ECRAN, METTRE SON WIDTH & SON HEIGHT A LA TAILLE DU VIEWPORT
-pub fn show(core:&mut crate::core::Core,image:Box<dyn Drawable>,index:usize){
+//On ajoute juste dans les layers
+//Note : POUR METTRE UNE IMAGE EN PLEIN ECRAN, METTRE SON WIDTH & SON HEIGHT A LA TAILLE DU VIEWPORT
+pub fn show<T: DrawableBuilder>(core: &mut crate::core::Core,image:T,index:usize){
     if index == 0 {
         return;
     }
+    let image = image.build();
     core.layers.layers[index].push(image);
 }
 
 // fn say(text:String){
 //
 // }
+
+/* MAIN FUNCTION */
 
 pub fn start(builder: crate::core::CoreBuilder){
 

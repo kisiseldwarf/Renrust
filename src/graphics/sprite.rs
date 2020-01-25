@@ -3,13 +3,13 @@ use sdl2::*;
 use sdl2::render::*;
 use sdl2::video::*;
 use sdl2::surface::*;
-use crate::graphics::DrawableBuilder;
-use super::*;
+use crate::graphics::*;
 use std::boxed::*;
 use std::path::*;
 
-
 const DEFAULT_POS : (i32,i32) = (0,0);
+
+/* Struct(s) Data(s) */
 
 #[derive(Clone,Debug)]
 pub struct Sprite{
@@ -26,6 +26,8 @@ pub struct SpriteBuilder{
     height:Option<u32>,
     pos:Option<(i32,i32)>,
 }
+
+/* Struct(s) Method(s) */
 
 impl SpriteBuilder{
     pub fn new(src: &Path)->SpriteBuilder{
@@ -50,6 +52,8 @@ impl SpriteBuilder{
         self
     }
 }
+
+/* Trait(s) Implementation(s) */
 
 impl DrawableBuilder for SpriteBuilder{
     fn build(self) -> Box<dyn Drawable>{

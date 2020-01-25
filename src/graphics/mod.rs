@@ -3,8 +3,12 @@ pub mod animated;
 
 use std::*;
 use sdl2::*;
-use path::Path;
-use std::boxed::Box;
+use path::*;
+use std::boxed::*;
+
+
+/* TRAITS */
+
 
 //Any graphics that can draw itself
 pub trait Drawable{
@@ -32,6 +36,10 @@ pub trait Sizeable{
 pub trait DrawableBuilder{
     fn build(self) -> Box<dyn Drawable>;
 }
+
+
+/* STRUCTS */
+
 
 //layers are just a collection of a collection owning an unknown number of Drawable
 pub struct Layers{
