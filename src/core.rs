@@ -13,8 +13,8 @@ pub struct Core{
     pub canvas:render::Canvas<video::Window>,
     pub layers:graphics::Layers,
     pub event_pump: EventPump,
-    pub update_func:(&mut Core),
-    pub init_func:(&mut Core),
+    pub update_func:fn(&mut Core),
+    pub init_func:fn(&mut Core),
 }
 
 pub struct CoreBuilder{
@@ -24,11 +24,23 @@ pub struct CoreBuilder{
     pub canvas:Option<render::Canvas<video::Window>>,
     pub layers:Option<graphics::Layers>,
     pub event_pump: Option<EventPump>,
+    pub update_func: Option<fn(&mut Core)>,
+    pub init_func: Option<fn(&mut Core)>,
 }
 
 impl CoreBuilder{
     pub fn fullscreen(mut self:CoreBuilder, is_it:bool) -> CoreBuilder{
         self.fullscreen = Some(is_it);
+        self
+    }
+
+    pub fn update(mut self, func: fn(&mut Core)) -> CoreBuilder{
+        self.update_func = Some(func);
+        self
+    }
+
+    pub fn init(mut self, func: fn(&mut Core)) -> CoreBuilder{
+        self.init_func = Some(func);
         self
     }
 
@@ -64,6 +76,8 @@ impl CoreBuilder{
         let canvas;
         let layers;
         let event_pump;
+        let update_func;
+        let init_func;
 
         if self.width.is_some(){
             width = self.width.unwrap();
@@ -86,6 +100,14 @@ impl CoreBuilder{
             None => panic!("Core must have an event_pump"),
             _=> event_pump = self.event_pump.unwrap(),
         }
+        match self.update_func{
+            None => panic!("No update function was given. Give one to core with this prototype : (&mut Core) => ()"),
+            _=> update_func = self.update_func.unwrap(),
+        }
+        match self.init_func{
+            None => panic!("No init function was given. Give one to core with this prototype : (&mut Core) => ()"),
+            _=> init_func = self.init_func.unwrap(),
+        }
         let res = Core{
             width,
             height,
@@ -93,6 +115,8 @@ impl CoreBuilder{
             canvas,
             layers,
             event_pump,
+            update_func,
+            init_func,
         };
         res
     }
@@ -106,6 +130,8 @@ pub fn core_builder() -> CoreBuilder{
         canvas: None,
         layers: None,
         event_pump: None,
+        update_func: None,
+        init_func: None,
     };
     res
 }

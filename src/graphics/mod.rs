@@ -1,15 +1,12 @@
 pub mod sprite;
 pub mod animated;
-
 use std::*;
 use sdl2::*;
 use path::*;
 use std::boxed::*;
 
 
-/* TRAITS */
-
-
+////* TRAITS *////
 //Any graphics that can draw itself
 pub trait Drawable{
     fn draw(&mut self, canvas: &mut render::Canvas<video::Window>);
@@ -38,8 +35,7 @@ pub trait DrawableBuilder{
 }
 
 
-/* STRUCTS */
-//layers are just a collection of a collection owning an unknown number of Drawable
+////* STRUCTS *////
 pub struct Layers{
     pub layers: Vec<Vec<Box<dyn Drawable>>>,
 }
