@@ -11,12 +11,13 @@ const DEFAULT_POS : (i32,i32) = (0,0);
 
 /* Struct(s) Data(s) */
 
-#[derive(Clone,Debug)]
+#[derive()]
 pub struct Sprite{
     path:PathBuf,
     width:u32,
     height:u32,
     pos:(i32,i32),
+    surface: Surface<'static>,
 }
 
 #[derive(Clone,Debug)]
@@ -76,6 +77,7 @@ impl DrawableBuilder for SpriteBuilder{
             width,
             height,
             pos,
+            surface,
         })
     }
 }
@@ -83,7 +85,6 @@ impl DrawableBuilder for SpriteBuilder{
 impl Drawable for Sprite{
     fn draw(&mut self, canvas: &mut Canvas<Window>){
         let path = self.path.clone();
-        let surface = Surface::load_bmp(path).unwrap();
         let width = self.width;
         let height = self.height;
         let x = self.pos.0;
@@ -95,10 +96,10 @@ impl Drawable for Sprite{
             height,
         );
         let texture_creator = canvas.texture_creator();
-        let texture = texture_creator.create_texture_from_surface(surface).unwrap();
+        let texture = texture_creator.create_texture_from_surface(&self.surface).unwrap();
         canvas.copy(&texture,None,rect).unwrap();
     }
-    
+
     fn get_path(&self)->&path::Path{
         &self.path
     }
@@ -141,6 +142,7 @@ impl Positionable for Sprite{
             path: self.path,
             width: self.width,
             height: self.height,
+            surface: self.surface,
             pos,
         }
     }
@@ -154,6 +156,7 @@ impl Positionable for Sprite{
             path: self.path,
             width: self.width,
             height: self.height,
+            surface: self.surface,
             pos,
         }
     }
