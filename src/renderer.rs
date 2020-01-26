@@ -5,10 +5,6 @@ use crate::*;
 use crate::graphics::*;
 use crate::core::*;
 
-const WIDTH : u32 = 1280;
-const HEIGHT : u32 = 720;
-const FULLSCREEN : bool = false;
-
 /* SDL2 Administration */
 pub fn build_window(video_subsystem:&sdl2::VideoSubsystem,title:&str,width:u32,height:u32,fullscreen:bool) -> sdl2::video::Window {
     let mut window = video_subsystem.window(title, width, height);

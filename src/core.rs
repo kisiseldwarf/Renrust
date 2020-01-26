@@ -13,6 +13,8 @@ pub struct Core{
     pub canvas:render::Canvas<video::Window>,
     pub layers:graphics::Layers,
     pub event_pump: EventPump,
+    pub update_func:(&mut Core),
+    pub init_func:(&mut Core),
 }
 
 pub struct CoreBuilder{

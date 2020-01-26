@@ -107,12 +107,12 @@ impl Drawable for Sprite{
 
 impl Sizeable for Sprite{
     fn resize(mut self, percentage: f32) -> Sprite{
-        let path = self.path.clone();
-        let surface = surface::Surface::load_bmp(path).unwrap();
-        let height = surface.height() as f32;
-        let width = surface.width() as f32;
-        self.width = (width * percentage) as u32;
-        self.height = (height * percentage) as u32;
+        let height = self.height as f32;
+        let width = self.width as f32;
+        let height = (height * percentage) as u32;
+        let width = (width * percentage) as u32;
+        self.width = width;
+        self.height = height;
         self
     }
     fn width(mut self, width: u32)->Sprite{
@@ -131,36 +131,87 @@ impl Sizeable for Sprite{
     }
 }
 
-impl Positionable for Sprite{
-    fn center(self, viewport: rect::Rect) -> Sprite{
+impl Sizeable for SpriteBuilder{
+    fn resize(mut self, percentage: f32) -> SpriteBuilder{
+        let path = self.path.clone();
+        let height;
+        let width;
+        if self.height.is_none() || self.width.is_none(){
+            let surface = Surface::load_bmp(&path).unwrap();
+            height = surface.height() as f32;
+            width = surface.width() as f32;
+        } else {
+            height = self.height.unwrap() as f32;
+            width = self.width.unwrap() as f32;
+        }
+        let height = (height * percentage) as u32;
+        let width = (width * percentage) as u32;
+        self.width = Some(width);
+        self.height = Some(height);
+        self
+    }
+    fn width(mut self, width: u32)->SpriteBuilder{
+        self.width = Some(width);
+        self
+    }
+    fn height(mut self, height: u32)->SpriteBuilder{
+        self.height = Some(height);
+        self
+    }
+    fn get_width(&self)->u32{
+        if self.width.is_some(){
+            self.width.unwrap()
+        } else {
+            0
+        }
+    }
+    fn get_height(&self)->u32{
+        if self.height.is_some(){
+            self.height.unwrap()
+        } else {
+            0
+        }
+    }
+}
+
+impl Positionable for SpriteBuilder{
+    fn center(self, viewport: rect::Rect) -> SpriteBuilder{
         let view_width = viewport.width() as i32;
         let view_height = viewport.height() as i32;
-        let width = self.width as i32;
-        let height = self.height as i32;
-        let pos = (view_width/2 - width/2,view_height/2 - height/2);
-        Sprite{
+        if self.width.is_none() || self.height.is_none(){
+            return self;
+        }
+        let width = self.width.unwrap() as i32;
+        let height = self.height.unwrap() as i32;
+        let pos = Some((view_width/2 - width/2,view_height/2 - height/2));
+        SpriteBuilder{
             path: self.path,
             width: self.width,
             height: self.height,
-            surface: self.surface,
             pos,
         }
     }
-    fn downcenter(self, viewport: rect::Rect) -> Sprite{
+    fn downcenter(self, viewport: rect::Rect) -> SpriteBuilder{
         let view_width = viewport.width() as i32;
         let view_height = viewport.height() as i32;
-        let width = self.width as i32;
-        let height = self.height as i32;
-        let pos = (view_width/2 - width/2,view_height - height);
-        Sprite{
+        if self.width.is_none() || self.height.is_none(){
+            return self;
+        }
+        let width = self.width.unwrap() as i32;
+        let height = self.height.unwrap() as i32;
+        let pos = Some((view_width/2 - width/2,view_height - height));
+        SpriteBuilder{
             path: self.path,
             width: self.width,
             height: self.height,
-            surface: self.surface,
             pos,
         }
     }
     fn get_pos(&self)->(i32,i32){
-        self.pos
+        if self.pos.is_none(){
+            (0,0)
+        } else {
+            self.pos.unwrap()
+        }
     }
 }
