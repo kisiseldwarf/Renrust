@@ -39,8 +39,6 @@ pub trait DrawableBuilder{
 
 
 /* STRUCTS */
-
-
 //layers are just a collection of a collection owning an unknown number of Drawable
 pub struct Layers{
     pub layers: Vec<Vec<Box<dyn Drawable>>>,

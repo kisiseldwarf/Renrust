@@ -59,14 +59,17 @@ impl DrawableBuilder for SpriteBuilder{
     fn build(&self) -> Box<dyn Drawable>{
         let path = self.path.clone();
         let surface = Surface::load_bmp(&path).unwrap();
-        let width = surface.width();
-        let height = surface.height();
-        let pos = DEFAULT_POS;
+        let mut width = surface.width();
+        let mut height = surface.height();
+        let mut pos = DEFAULT_POS;
         if self.width.is_some(){
-            let width = self.width.unwrap();
+            width = self.width.unwrap();
         }
         if self.height.is_some(){
-            let height = self.height.unwrap();
+            height = self.height.unwrap();
+        }
+        if self.pos.is_some(){
+            pos = self.pos.unwrap();
         }
         Box::new(Sprite{
             path,
@@ -95,6 +98,7 @@ impl Drawable for Sprite{
         let texture = texture_creator.create_texture_from_surface(surface).unwrap();
         canvas.copy(&texture,None,rect).unwrap();
     }
+    
     fn get_path(&self)->&path::Path{
         &self.path
     }

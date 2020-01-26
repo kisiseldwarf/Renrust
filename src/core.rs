@@ -12,6 +12,7 @@ pub struct Core{
     pub fullscreen:bool,
     pub canvas:render::Canvas<video::Window>,
     pub layers:graphics::Layers,
+    pub event_pump: EventPump,
 }
 
 pub struct CoreBuilder{
@@ -20,11 +21,17 @@ pub struct CoreBuilder{
     pub fullscreen:Option<bool>,
     pub canvas:Option<render::Canvas<video::Window>>,
     pub layers:Option<graphics::Layers>,
+    pub event_pump: Option<EventPump>,
 }
 
 impl CoreBuilder{
     pub fn fullscreen(mut self:CoreBuilder, is_it:bool) -> CoreBuilder{
         self.fullscreen = Some(is_it);
+        self
+    }
+
+    pub fn event_pump(mut self, event_pump: EventPump) -> CoreBuilder{
+        self.event_pump = Some(event_pump);
         self
     }
 
@@ -54,6 +61,7 @@ impl CoreBuilder{
         let mut fullscreen = DEFAULT_FULLSCREEN;
         let canvas;
         let layers;
+        let event_pump;
 
         if self.width.is_some(){
             width = self.width.unwrap();
@@ -72,13 +80,17 @@ impl CoreBuilder{
             None => panic!("Core must have layers"),
             _=> layers = self.layers.unwrap(),
         }
-
+        match self.event_pump{
+            None => panic!("Core must have an event_pump"),
+            _=> event_pump = self.event_pump.unwrap(),
+        }
         let res = Core{
             width,
             height,
             fullscreen,
             canvas,
             layers,
+            event_pump,
         };
         res
     }
@@ -91,6 +103,7 @@ pub fn core_builder() -> CoreBuilder{
         fullscreen: None,
         canvas: None,
         layers: None,
+        event_pump: None,
     };
     res
 }
