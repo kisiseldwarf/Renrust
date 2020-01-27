@@ -10,7 +10,7 @@ use std::any::Any;
 ////* TRAITS *////
 //Any graphics that can draw itself
 pub trait Drawable : Sizeable{
-    fn draw(&mut self, canvas: &mut render::Canvas<video::Window>);
+    fn draw(&mut self, canvas: &mut render::Canvas<video::Window>, delta: u128);
     fn get_path(&self)->&Path;
 }
 

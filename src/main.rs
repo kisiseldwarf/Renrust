@@ -11,7 +11,6 @@ const FULLSCREEN : bool = false;
 
 fn update(core: &mut renrust::core::Core){
     //Do things
-    println!("{}",core.elapsed);
 }
 
 fn init(core: &mut renrust::core::Core){

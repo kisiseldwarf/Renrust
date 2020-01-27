@@ -158,7 +158,7 @@ impl Positionable for SpriteBuilder{
 /* Sprite */
 
 impl Drawable for Sprite{
-    fn draw(&mut self, canvas: &mut Canvas<Window>){
+    fn draw(&mut self, canvas: &mut Canvas<Window>, delta: u128){
         let path = self.path.clone();
         let width = self.width;
         let height = self.height;

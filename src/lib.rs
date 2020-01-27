@@ -69,7 +69,7 @@ fn mainloop(mut core: Core){
         //On dessine tous les calques
         for lay in core.layers.layers.iter_mut(){
             for img in lay.iter_mut(){
-                img.as_mut().draw(&mut core.canvas);
+                img.as_mut().draw(&mut core.canvas, core.elapsed);
             }
         }
         core.canvas.present();

@@ -8,11 +8,10 @@ use crate::graphics::*;
 use std::boxed::*;
 use std::path::*;
 
-const DEFAULT_FRAMESPEED : u32 = 1;
-const FRAMES_ELAPSED_STARTER : u32 = 0;
+const DEFAULT_FRAMESPEED : u32 = 30;
+const FRAMES_ELAPSED_STARTER : u128 = 0;
 const CURRENT_STARTER : usize = 0;
 const STD_FRAME : usize = 0;
-const FRAMES_CNT_STEP : u32 = 1;
 const CURRENT_STEP : usize = 1;
 const FRAMES_CNT_START : u32 = 0;
 
@@ -41,7 +40,7 @@ pub struct Animated{
     frames:Vec<Box<dyn Drawable>>,
     current:usize,
     framespeed:u32,
-    frames_elapsed:u32,
+    frames_elapsed:u128,
 }
 
 #[derive(Clone)]
@@ -121,20 +120,20 @@ impl Sizeable for Animated{
 }
 
 impl Drawable for Animated{
-    fn draw(&mut self, canvas: &mut Canvas<Window>){
-        if self.frames_elapsed != self.framespeed {
-            self.frames_elapsed += FRAMES_CNT_STEP;
-            self.frames[self.current].draw(canvas);
+    fn draw(&mut self, canvas: &mut Canvas<Window>, delta: u128){
+        let framespeed_in_millis = ((self.framespeed as f32) / (1000 as f32)); //Nombre de tranisitions par secondes
+        if self.frames_elapsed as f32 <= ((1 as f32) / framespeed_in_millis) {
+            self.frames_elapsed += delta;
+            self.frames[self.current].draw(canvas, delta);
             return;
         }
-        self.frames_elapsed = FRAMES_CNT_START;
-
+        self.frames_elapsed = FRAMES_ELAPSED_STARTER;
         if self.current == self.frames.len()-1 {
             self.current = CURRENT_STARTER;
         } else {
             self.current += CURRENT_STEP;
         }
-        self.frames[self.current].draw(canvas);
+        self.frames[self.current].draw(canvas, delta);
     }
 
     fn get_path(&self) -> &Path{
