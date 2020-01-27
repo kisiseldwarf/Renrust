@@ -5,6 +5,7 @@ use std::*;
 const DEFAULT_WIDTH : u32 = 200;
 const DEFAULT_HEIGHT : u32 = 200;
 const DEFAULT_FULLSCREEN : bool = false;
+const ELAPSED_STARTER : u128 = 0;
 
 pub struct Core{
     pub width:u32,
@@ -15,6 +16,7 @@ pub struct Core{
     pub event_pump: EventPump,
     pub update_func:fn(&mut Core),
     pub init_func:fn(&mut Core),
+    pub elapsed: u128,
 }
 
 pub struct CoreBuilder{
@@ -73,6 +75,7 @@ impl CoreBuilder{
         let mut width = DEFAULT_WIDTH;
         let mut height = DEFAULT_HEIGHT;
         let mut fullscreen = DEFAULT_FULLSCREEN;
+        let elapsed = ELAPSED_STARTER;
         let canvas;
         let layers;
         let event_pump;
@@ -117,6 +120,7 @@ impl CoreBuilder{
             event_pump,
             update_func,
             init_func,
+            elapsed,
         };
         res
     }

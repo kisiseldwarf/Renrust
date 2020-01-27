@@ -2,6 +2,7 @@ extern crate renrust;
 
 use renrust::*;
 use renrust::graphics::sprite::SpriteBuilder;
+use renrust::graphics::animated::AnimatedBuilder;
 use std::path::*;
 
 const WIDTH : u32 = 800;
@@ -10,17 +11,12 @@ const FULLSCREEN : bool = false;
 
 fn update(core: &mut renrust::core::Core){
     //Do things
+    println!("{}",core.elapsed);
 }
 
 fn init(core: &mut renrust::core::Core){
-    let frame = SpriteBuilder::new(Path::new("/home/kisis/animations/objection-0043.bmp")).pos((100,200));
-    let frame2 = SpriteBuilder::new(Path::new("/home/kisis/renrust/bg.bmp"));
-    renrust::show(core,&frame,2);
-    let frame = frame.pos((54,202));
-    renrust::show(core,&frame,2);
-    let frame = frame.pos((-10,-10));
-    renrust::show(core,&frame,2);
-    renrust::scene(core,&frame2);
+    let animated = renrust::graphics::animated::load(Path::new("/home/kisis/animations"));
+    renrust::show(core,&animated,2);
 }
 
 fn main() {

@@ -4,6 +4,7 @@ use std::*;
 use sdl2::*;
 use path::*;
 use std::boxed::*;
+use std::any::Any;
 
 
 ////* TRAITS *////

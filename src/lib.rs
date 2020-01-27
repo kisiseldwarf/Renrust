@@ -8,6 +8,7 @@ use sdl2::event::*;
 use sdl2::keyboard::*;
 use crate::graphics::*;
 use crate::core::*;
+use std::time::{Duration, Instant};
 
 const SCENE_LAYER : usize = 0;
 
@@ -45,9 +46,11 @@ pub fn start(mut core: Core){
 fn mainloop(mut core: Core){
     //Affichage du canvas
     core.canvas.present();
-
+    let mut timer;
     //Boucle englobante
     'mainloop: loop {
+        //timer
+        timer = Instant::now();
         //Boucle évenementielle
         let event_pump = &mut core.event_pump;
         for event in event_pump.poll_iter() {
@@ -70,5 +73,8 @@ fn mainloop(mut core: Core){
             }
         }
         core.canvas.present();
+        //timer
+        core.elapsed = timer.elapsed().as_millis();
+        timer = Instant::now();
     }
 }
