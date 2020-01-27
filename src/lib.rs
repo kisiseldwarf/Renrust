@@ -9,19 +9,20 @@ use sdl2::keyboard::*;
 use crate::graphics::*;
 use crate::core::*;
 
+const SCENE_LAYER : usize = 0;
+
 ////* Main Statements *////
 
-pub fn scene<T: DrawableBuilder + Clone + Sizeable>(core: &mut Core, img: &T){
-    let img = img.clone();
-    let img = img.width(core.canvas.viewport().width());
-    let img = img.height(core.canvas.viewport().height());
-    let img = img.build();
+pub fn scene<T: DrawableBuilder>(core: &mut Core, img: &T){
+    let mut img = img.build();
+    img.width(core.canvas.viewport().width());
+    img.height(core.canvas.viewport().height());
     core.layers.layers[0].push(img);
 }
 
 //Note : POUR METTRE UNE IMAGE EN PLEIN ECRAN, METTRE SON WIDTH & SON HEIGHT A LA TAILLE DU VIEWPORT
 pub fn show<T: DrawableBuilder>(core: &mut Core, image: &T, index: usize){
-    if index == 0 {
+    if index == SCENE_LAYER {
         return;
     }
     let image = image.build();
