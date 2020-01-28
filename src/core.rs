@@ -70,7 +70,6 @@ impl CoreBuilder{
         self.layers = Some(l);
         self
     }
-
     pub fn build(self:CoreBuilder) -> Core{
         let mut width = DEFAULT_WIDTH;
         let mut height = DEFAULT_HEIGHT;

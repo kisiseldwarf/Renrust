@@ -3,8 +3,9 @@ use sdl2::*;
 use sdl2::render::*;
 use sdl2::video::*;
 use sdl2::surface::*;
+use sdl2::rect::Rect;
 use crate::graphics::sprite::*;
-use crate::graphics::*;
+use crate::graphics::{Sizeable,DrawableBuilder,Positionable,Drawable};
 use std::boxed::*;
 use std::path::*;
 
@@ -14,6 +15,10 @@ const CURRENT_STARTER : usize = 0;
 const STD_FRAME : usize = 0;
 const CURRENT_STEP : usize = 1;
 const FRAMES_CNT_START : u32 = 0;
+const ERROR : u32 = 0;
+const ERROR_I32 : i32 = -20000;
+const SECOND_IN_MILLIS : f32 = 1000.0;
+const BMP_EXT : &str = "bmp";
 
 /* Shortcut Function */
 
@@ -24,7 +29,7 @@ pub fn load(src: &Path) -> AnimatedBuilder{
             let entry = entries.unwrap();
             let path = entry.path();
             let ext = path.extension();
-            if ext.is_some() && ext.unwrap() == "bmp"{
+            if ext.is_some() && ext.unwrap() == BMP_EXT{
                 frames.push(SpriteBuilder::new(&entry.path()));
             }
         }
@@ -95,6 +100,89 @@ impl DrawableBuilder for AnimatedBuilder{
     }
 }
 
+
+impl Sizeable for AnimatedBuilder{
+    fn resize(&mut self, percentage: f32){
+        if self.frames.is_none(){
+            return;
+        }
+        for mut frame in self.frames.as_mut().unwrap().iter_mut(){
+            frame.resize(percentage);
+        }
+    }
+    fn width(&mut self, w: u32){
+        if self.frames.is_none(){
+            return;
+        }
+        for mut frame in self.frames.as_mut().unwrap().iter_mut(){
+            frame.width(w);
+        }
+    }
+    fn height(&mut self, h: u32){
+        if self.frames.is_none(){
+            return;
+        }
+        for mut frame in self.frames.as_mut().unwrap().iter_mut(){
+            frame.height(h);
+        }
+    }
+    fn get_width(&self)->u32{
+        if self.frames.is_some() && !self.frames.as_ref().unwrap().is_empty() {
+            return self.frames.as_ref().unwrap()[STD_FRAME].get_width();
+        } else {
+            return ERROR;
+        }
+    }
+    fn get_height(&self)->u32{
+        if self.frames.is_some() && !self.frames.as_ref().unwrap().is_empty() {
+            return self.frames.as_ref().unwrap()[STD_FRAME].get_height();
+        } else {
+            return ERROR;
+        }
+    }
+}
+
+impl Positionable for AnimatedBuilder{
+    fn center(&mut self, viewport: rect::Rect){
+        if self.frames.is_none(){
+            return;
+        }
+        for frame in self.frames.as_mut().unwrap().iter_mut(){
+            frame.center(viewport);
+        }
+    }
+    fn downcenter(&mut self, viewport: rect::Rect){
+        if self.frames.is_none(){
+            return;
+        }
+        for frame in self.frames.as_mut().unwrap().iter_mut(){
+            frame.downcenter(viewport);
+        }
+    }
+    fn x_perc(&mut self, perc: f32, viewport: Rect){
+        if self.frames.is_none(){
+            return;
+        }
+        for frame in self.frames.as_mut().unwrap().iter_mut(){
+            frame.x_perc(perc,viewport);
+        }
+    }
+    fn y_perc(&mut self, perc: f32, viewport: Rect){
+        if self.frames.is_none(){
+            return;
+        }
+        for frame in self.frames.as_mut().unwrap().iter_mut(){
+            frame.y_perc(perc,viewport);
+        }
+    }
+    fn get_pos(&self)->(i32,i32){
+        if self.frames.is_none(){
+            return (ERROR_I32,ERROR_I32);
+        }
+        return self.frames.as_ref().unwrap()[STD_FRAME].get_pos();
+    }
+}
+
 impl Sizeable for Animated{
     fn resize(&mut self, percentage: f32){
         for frame in &mut self.frames{
@@ -121,7 +209,7 @@ impl Sizeable for Animated{
 
 impl Drawable for Animated{
     fn draw(&mut self, canvas: &mut Canvas<Window>, delta: u128){
-        let framespeed_in_millis = ((self.framespeed as f32) / (1000 as f32)); //Nombre de tranisitions par secondes
+        let framespeed_in_millis = ((self.framespeed as f32) / SECOND_IN_MILLIS); //Nombre de tranisitions par secondes
         if self.frames_elapsed as f32 <= ((1 as f32) / framespeed_in_millis) {
             self.frames_elapsed += delta;
             self.frames[self.current].draw(canvas, delta);
@@ -141,110 +229,6 @@ impl Drawable for Animated{
     }
 }
 
-// // impl Positionable for AnimatedBuilder{
-// //     fn center(self,viewport: rect::Rect) -> AnimatedBuilder{
-// //         let vec = Vec::<Sprite>::new();
-// //         let mut res = AnimatedBuilder{
-// //             frames:Some(vec),
-// //             current:self.current,
-// //             framespeed:self.framespeed,
-// //         };
-// //         if self.frames.is_none(){
-// //             return res;
-// //         }
-// //         let mut vec = Vec::<Sprite>::new();
-// //         for i in self.frames.unwrap(){
-// //             vec.push(i.center(viewport));
-// //         }
-// //         res.frames = Some(vec);
-// //         res
-// //     }
-// //     fn downcenter(self, viewport: rect::Rect) -> AnimatedBuilder{
-// //         let vec = Vec::<Sprite>::new();
-// //         let mut res = AnimatedBuilder{
-// //             frames:Some(vec),
-// //             current:self.current,
-// //             framespeed:self.framespeed,
-// //         };
-// //         if self.frames.is_none(){
-// //             return res;
-// //         }
-// //         let mut vec = Vec::<Sprite>::new();
-// //         for i in self.frames.unwrap(){
-// //             vec.push(i.downcenter(viewport));
-// //         }
-// //         res.frames = Some(vec);
-// //         res
-// //     }
-// //     fn left(self,viewport: rect::Rect) -> AnimatedBuilder{
-// //         let vec = Vec::<Sprite>::new();
-// //         let mut res = AnimatedBuilder{
-// //             frames:Some(vec),
-// //             current:self.current,
-// //             framespeed:self.framespeed,
-// //         };
-// //         if self.frames.is_none(){
-// //             return res;
-// //         }
-// //         let mut vec = Vec::<Sprite>::new();
-// //         for i in self.frames.unwrap(){
-// //             vec.push(i.left(viewport));
-// //         }
-// //         res.frames = Some(vec);
-// //         res
-// //     }
-// //     fn right(self, viewport: rect::Rect) -> AnimatedBuilder{
-// //         let mut vec = Vec::<Sprite>::new();
-// //         let mut res = AnimatedBuilder{
-// //             frames:Some(vec),
-// //             current:self.current,
-// //             framespeed:self.framespeed,
-// //         };
-// //         if self.frames.is_none(){
-// //             return res;
-// //         }
-// //         let mut vec = Vec::<Sprite>::new();
-// //         for i in self.frames.unwrap(){
-// //             vec.push(i.right(viewport));
-// //         }
-// //         res.frames = Some(vec);
-// //         res
-// //     }
-// //     fn downleft(self, viewport: rect::Rect) -> AnimatedBuilder{
-// //         let vec = Vec::<Sprite>::new();
-// //         let mut res = AnimatedBuilder{
-// //             frames:Some(vec),
-// //             current:self.current,
-// //             framespeed:self.framespeed,
-// //         };
-// //         if self.frames.is_none(){
-// //             return res;
-// //         }
-// //         let mut vec = Vec::<Sprite>::new();
-// //         for i in self.frames.unwrap(){
-// //             vec.push(i.downleft(viewport));
-// //         }
-// //         res.frames = Some(vec);
-// //         res
-// //     }
-// //     fn downright(self, viewport: rect::Rect) -> AnimatedBuilder{
-// //         let vec = Vec::<Sprite>::new();
-// //         let mut res = AnimatedBuilder{
-// //             frames:Some(vec),
-// //             current:self.current,
-// //             framespeed:self.framespeed,
-// //         };
-// //         if self.frames.is_none(){
-// //             return res;
-// //         }
-// //         let mut vec = Vec::<Sprite>::new();
-// //         for i in self.frames.unwrap(){
-// //             vec.push(i.downright(viewport));
-// //         }
-// //         res.frames = Some(vec);
-// //         res
-// //     }
-// // }
 // //
 // // impl Positionable for Animated{
 // //     fn center(self,viewport: rect::Rect) -> Animated{

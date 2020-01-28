@@ -2,10 +2,9 @@ pub mod sprite;
 pub mod animated;
 use std::*;
 use sdl2::*;
+use sdl2::rect::Rect;
 use path::*;
 use std::boxed::*;
-use std::any::Any;
-
 
 ////* TRAITS *////
 //Any graphics that can draw itself
@@ -16,9 +15,11 @@ pub trait Drawable : Sizeable{
 
 //Any graphics that can position itself
 pub trait Positionable{
-    fn center(&mut self,viewport: rect::Rect);
-    fn downcenter(&mut self, viewport: rect::Rect);
+    fn center(&mut self, viewport: Rect);
+    fn downcenter(&mut self, viewport: Rect);
     fn get_pos(&self)->(i32,i32);
+    fn x_perc(&mut self, perc: f32, viewport: Rect);
+    fn y_perc(&mut self, perc: f32, viewport: Rect);
 }
 
 //Any graphics that can resize itself
@@ -40,3 +41,8 @@ pub trait DrawableBuilder{
 pub struct Layers{
     pub layers: Vec<Vec<Box<dyn Drawable>>>,
 }
+
+/* Generic(s) Function(s) */
+// fn create_text_box(color: Color)->Rect{
+//
+// }

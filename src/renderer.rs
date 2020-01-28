@@ -8,6 +8,17 @@ const WIDTH : u32 = 1280;
 const HEIGHT : u32 = 720;
 const FULLSCREEN : bool = false;
 
+/* Useful Handout */
+
+#[macro_export]
+macro_rules! rect(
+    ($x:expr, $y:expr, $w:expr, $h:expr) => (
+        Rect::new($x as i32, $y as i32, $w as u32, $h as u32)
+    )
+);
+
+/* SDL2 Initialisation */
+
 pub fn build_window(video_subsystem:&sdl2::VideoSubsystem,title:&str,width:u32,height:u32,fullscreen:bool) -> sdl2::video::Window {
     let mut window = video_subsystem.window(title, width, height);
     if fullscreen

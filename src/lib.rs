@@ -2,7 +2,11 @@ mod character;
 pub mod renderer;
 pub mod core;
 pub mod graphics;
+pub mod text_engine;
+
 extern crate sdl2;
+extern crate rusttype;
+
 use std::option::*;
 use sdl2::event::*;
 use sdl2::keyboard::*;
@@ -12,13 +16,13 @@ use std::time::{Duration, Instant};
 
 const SCENE_LAYER : usize = 0;
 
-////* Main Statements *////
+/* Main Statements */
 
 pub fn scene<T: DrawableBuilder>(core: &mut Core, img: &T){
     let mut img = img.build();
     img.width(core.canvas.viewport().width());
     img.height(core.canvas.viewport().height());
-    core.layers.layers[0].push(img);
+    core.layers.layers[SCENE_LAYER].push(img);
 }
 
 //Note : POUR METTRE UNE IMAGE EN PLEIN ECRAN, METTRE SON WIDTH & SON HEIGHT A LA TAILLE DU VIEWPORT
@@ -34,7 +38,7 @@ pub fn show<T: DrawableBuilder>(core: &mut Core, image: &T, index: usize){
 // TO DO
 // }
 
-////* Launch Function *////
+/* Launch Function */
 
 pub fn start(mut core: Core){
     (core.init_func)(&mut core);
@@ -49,8 +53,9 @@ fn mainloop(mut core: Core){
     let mut timer;
     //Boucle englobante
     'mainloop: loop {
-        //timer
+        //Timer
         timer = Instant::now();
+
         //Boucle évenementielle
         let event_pump = &mut core.event_pump;
         for event in event_pump.poll_iter() {

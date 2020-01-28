@@ -8,6 +8,7 @@ use std::boxed::*;
 use std::path::*;
 
 const DEFAULT_POS : (i32,i32) = (0,0);
+const ERROR : u32 = 0;
 
 /* Struct(s) Data(s) */
 
@@ -18,6 +19,7 @@ pub struct Sprite{
     height:u32,
     pos:(i32,i32),
     surface: Surface<'static>,
+    original_dim: (u32,u32),
 }
 
 #[derive(Clone,Debug)]
@@ -26,19 +28,21 @@ pub struct SpriteBuilder{
     width:Option<u32>,
     height:Option<u32>,
     pos:Option<(i32,i32)>,
+    original_dim: (u32,u32),
 }
 
 /* Struct(s) Method(s) */
-/* Sprite Builder */
 
 impl SpriteBuilder{
     pub fn new(src: &Path)->SpriteBuilder{
         let pathbuf = src.to_path_buf();
+        let surface = Surface::load_bmp(src).unwrap();
         SpriteBuilder{
             path: pathbuf,
             width: None,
             height: None,
             pos: None,
+            original_dim: (surface.width(),surface.height()),
         }
     }
     pub fn width(mut self, w: u32)->SpriteBuilder{
@@ -61,8 +65,9 @@ impl DrawableBuilder for SpriteBuilder{
     fn build(&self) -> Box<dyn Drawable>{
         let path = self.path.clone();
         let surface = Surface::load_bmp(&path).unwrap();
-        let mut width = surface.width();
-        let mut height = surface.height();
+        let original_dim = (surface.width(),surface.height());
+        let mut width = original_dim.0;
+        let mut height = original_dim.1;
         let mut pos = DEFAULT_POS;
         if self.width.is_some(){
             width = self.width.unwrap();
@@ -79,6 +84,7 @@ impl DrawableBuilder for SpriteBuilder{
             height,
             pos,
             surface,
+            original_dim,
         })
     }
 }
@@ -113,14 +119,14 @@ impl Sizeable for SpriteBuilder{
         if self.width.is_some(){
             self.width.unwrap()
         } else {
-            0
+            ERROR
         }
     }
     fn get_height(&self)->u32{
         if self.height.is_some(){
             self.height.unwrap()
         } else {
-            0
+            ERROR
         }
     }
 }
@@ -129,33 +135,53 @@ impl Positionable for SpriteBuilder{
     fn center(&mut self, viewport: rect::Rect){
         let view_width = viewport.width() as i32;
         let view_height = viewport.height() as i32;
-        if self.width.is_none() || self.height.is_none(){
-            return;
+        let mut width = self.original_dim.0 as i32;
+        let mut height = self.original_dim.1 as i32;
+        if self.width.is_some(){
+            width = self.width.unwrap() as i32;
         }
-        let width = self.width.unwrap() as i32;
-        let height = self.height.unwrap() as i32;
+        if self.height.is_some(){
+            height = self.height.unwrap() as i32;
+        }
         self.pos = Some((view_width/2 - width/2,view_height/2 - height/2));
     }
     fn downcenter(&mut self, viewport: rect::Rect){
         let view_width = viewport.width() as i32;
         let view_height = viewport.height() as i32;
-        if self.width.is_none() || self.height.is_none(){
-            return;
+        let mut width = self.original_dim.0 as i32;
+        let mut height = self.original_dim.1 as i32;
+        if self.width.is_some(){
+            width = self.width.unwrap() as i32;
         }
-        let width = self.width.unwrap() as i32;
-        let height = self.height.unwrap() as i32;
+        if self.height.is_some(){
+            height = self.height.unwrap() as i32;
+        }
         self.pos = Some((view_width/2 - width/2,view_height - height));
+    }
+    fn x_perc(&mut self, perc: f32, viewport: Rect){
+        let decal : i32 = (perc * (viewport.width() as f32)) as i32;
+        if self.pos.is_none(){
+            self.pos = Some( (decal, 0) );
+        } else {
+            self.pos = Some((self.pos.unwrap().0 + decal, self.pos.unwrap().1));
+        }
+    }
+    fn y_perc(&mut self, perc: f32, viewport: Rect){
+        let decal : i32 = (perc * (viewport.height() as f32)) as i32;
+        if self.pos.is_none(){
+            self.pos = Some( (0, decal) );
+        } else {
+            self.pos = Some((self.pos.unwrap().0, self.pos.unwrap().1  + decal));
+        }
     }
     fn get_pos(&self)->(i32,i32){
         if self.pos.is_none(){
-            (0,0)
+            DEFAULT_POS
         } else {
             self.pos.unwrap()
         }
     }
 }
-
-/* Sprite */
 
 impl Drawable for Sprite{
     fn draw(&mut self, canvas: &mut Canvas<Window>, delta: u128){
@@ -164,12 +190,7 @@ impl Drawable for Sprite{
         let height = self.height;
         let x = self.pos.0;
         let y = self.pos.1;
-        let rect = rect::Rect::new(
-            x,
-            y,
-            width,
-            height,
-        );
+        let rect = sdl2::rect::Rect::new(x,y,width,height);
         let texture_creator = canvas.texture_creator();
         let texture = texture_creator.create_texture_from_surface(&self.surface).unwrap();
         canvas.copy(&texture,None,rect).unwrap();
