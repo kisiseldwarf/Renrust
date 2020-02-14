@@ -480,9 +480,16 @@ name = "renrust"
 version = "0.1.0"
 dependencies = [
  "image",
+ "rgb",
  "rusttype",
  "sdl2",
 ]
+
+[[package]]
+name = "rgb"
+version = "0.8.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5ec4ab2cf0b27e111e266e161cf7f9efd20125a161190da1c0945c4a4408fef3"
 
 [[package]]
 name = "rustc_version"

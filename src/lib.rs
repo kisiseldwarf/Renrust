@@ -6,12 +6,14 @@ pub mod text_engine;
 
 extern crate sdl2;
 extern crate rusttype;
+extern crate rgb;
 
 use std::option::*;
 use sdl2::event::*;
 use sdl2::keyboard::*;
 use crate::graphics::*;
 use crate::core::*;
+use crate::text_engine::*;
 use std::time::{Duration, Instant};
 
 const SCENE_LAYER : usize = 0;
@@ -34,8 +36,8 @@ pub fn show<T: DrawableBuilder>(core: &mut Core, image: &T, index: usize){
     core.layers.layers[index].push(image);
 }
 
-// fn say(text:String){
-// TO DO
+// pub fn say(text: &str){
+//     let TextBuilder
 // }
 
 /* Launch Function */
