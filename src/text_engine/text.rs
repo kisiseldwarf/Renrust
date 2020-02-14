@@ -17,7 +17,7 @@ const DEFAULT_SIZE : u32 = 40;
 const DEFAULT_QUALITY : f32 = 70.0;
 const DEFAULT_COLOR : RGBA<u8> = BLACK;
 const DEFAULT_POS : (i32,i32) = (0,0);
-const DEFAULT_FONT_POS : (f32,f32) = (20.0,20.0);
+const DEFAULT_FONT_POS : (f32,f32) = (0.0,0.0);
 const DEFAULT_TEXT : &str = "";
 const DEFAULT_SPACE : u32 = 0;
 const DEFAULT_SPACE_SIZE : u32 = 20;
@@ -209,7 +209,7 @@ impl Drawable for Text{
         for letter in self.letters.iter_mut(){
             let width = letter.width;
             let height  = letter.height;
-            let pos = sdl2::rect::Rect::new((self.pos.0 + offset as i32), self.pos.1 + letter.bounding_box.min.y - (self.vmetric.ascent + self.vmetric.descent) as i32, width * self.size, height * self.size);
+            let pos = sdl2::rect::Rect::new((self.pos.0 + offset as i32), self.pos.1 + letter.bounding_box.min.y, width * self.size, height * self.size);
             let surf = Surface::from_data(
                 &mut letter.data,
                 width,

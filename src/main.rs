@@ -27,10 +27,10 @@ fn init(core: &mut renrust::core::Core){
     /* style */
     animated.center(vp);
     let animated = animated.framespeed(20);
-    textbuilder.text("Je t'aime Pierre");
+    textbuilder.text("Love from Russia");
     textbuilder.size(1);
     textbuilder.spacing(3);
-    textbuilder.pos((30,20));
+    textbuilder.pos((0,0));
     textbuilder.color(RGBA::<u8>::new(162,210,223,255));
 
     /* display */
