@@ -27,7 +27,7 @@ fn init(core: &mut renrust::core::Core){
     /* style */
     animated.center(vp);
     let animated = animated.framespeed(20);
-    textbuilder.text("Pierre pue de la gueule !");
+    textbuilder.text("Je t'aime Pierre");
     textbuilder.size(1);
     textbuilder.spacing(3);
     textbuilder.pos((30,20));
