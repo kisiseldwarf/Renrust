@@ -1,5 +1,5 @@
 use std::path::{Path,PathBuf};
-use rusttype::{Font,Scale,VMetrics,point};
+use rusttype::{Font,Scale,VMetrics,HMetrics,point};
 use std::fs::*;
 use sdl2::*;
 use sdl2::video::Window;
@@ -35,7 +35,7 @@ pub struct TextBuilder{
     size: u32,
     color: RGBA<u8>,
     quality: Scale,
-    metric: VMetrics,
+    vmetric: VMetrics,
     spacing: u32,
     pos: (i32,i32),
 }
@@ -45,7 +45,7 @@ struct Letter{
     width: u32,
     height: u32,
     data: Box<Vec<u8>>,
-    voffset: i32,
+    hmetric: HMetrics,
     bounding_box: rusttype::Rect<i32>,
 }
 
@@ -55,17 +55,57 @@ pub struct Text{
     path: PathBuf,
     pos: (i32,i32),
     size: u32,
-    metric: VMetrics,
+    vmetric: VMetrics,
     spacing: u32,
 }
 
+pub struct Style{
+    font: Font<'static>,
+    size: u32,
+    color: RGBA<u8>,
+    quality: Scale,
+    spacing: u32,
+    pos: (i32,i32),
+}
+
 /* Struct(s) Implementation(s) */
+
+impl Style{
+    pub fn new(font: &Path)->Style{
+        let font = Font::from_bytes(read(font).unwrap()).unwrap();
+        let quality = Scale::uniform(DEFAULT_QUALITY);
+        Style{
+            font,
+            color: DEFAULT_COLOR,
+            size: DEFAULT_SIZE,
+            pos: DEFAULT_POS,
+            spacing: DEFAULT_SPACE,
+            quality,
+        }
+    }
+    pub fn color(&mut self, col: RGBA<u8>){
+        self.color = col;
+    }
+    pub fn quality(&mut self, quality: f32){
+        let quality = Scale::uniform(quality);
+        self.quality = quality;
+    }
+    pub fn spacing(&mut self, spacing: u32){
+        self.spacing = spacing;
+    }
+    pub fn pos(&mut self, pos: (i32,i32)){
+        self.pos = pos;
+    }
+    pub fn size(&mut self, size: u32){
+        self.size = size;
+    }
+}
 
 impl TextBuilder{
     pub fn new(font: &Path)->TextBuilder{
         let font = Font::from_bytes(read(font).unwrap()).unwrap();
         let quality = Scale::uniform(DEFAULT_QUALITY);
-        let metric = font.v_metrics(quality);
+        let vmetric = font.v_metrics(quality);
         TextBuilder{
             font,
             text: DEFAULT_TEXT.to_string(),
@@ -74,7 +114,7 @@ impl TextBuilder{
             pos: DEFAULT_POS,
             spacing: DEFAULT_SPACE,
             quality,
-            metric,
+            vmetric,
         }
     }
     pub fn get_color(&self)->RGBA<u8>{
@@ -94,9 +134,9 @@ impl TextBuilder{
     }
     pub fn quality(&mut self, quality: f32){
         let quality = Scale::uniform(quality);
-        let metric = self.font.v_metrics(quality);
+        let vmetric = self.font.v_metrics(quality);
         self.quality = quality;
-        self.metric = metric;
+        self.vmetric = vmetric;
     }
     pub fn spacing(&mut self, spacing: u32){
         self.spacing = spacing;
@@ -107,8 +147,8 @@ impl DrawableBuilder for TextBuilder{
     fn build(&self)->Box<dyn Drawable>{
         let mut letters = vec![];
         //point is placing the baseline
-        let glyphs : Vec<_> = self.font.layout(self.text.as_str(), self.quality, point(DEFAULT_FONT_POS.0,DEFAULT_FONT_POS.1 + self.metric.ascent)).collect();
-        let glyphs_height = (self.metric.ascent - self.metric.descent).ceil() as u32;
+        let glyphs : Vec<_> = self.font.layout(self.text.as_str(), self.quality, point(DEFAULT_FONT_POS.0,DEFAULT_FONT_POS.1 + self.vmetric.ascent)).collect();
+        let glyphs_height = (self.vmetric.ascent - self.vmetric.descent).ceil() as u32;
         for glyph in glyphs{
             let glyph_width = {
                 match glyph.pixel_bounding_box(){
@@ -140,17 +180,13 @@ impl DrawableBuilder for TextBuilder{
                 letter_data[(x + y * glyph_width) as usize] = RGBA::<u8>{r:self.color.r,g:self.color.g,b:self.color.b,a:(v * self.color.a as f32) as u8,};
             });
             let letter_data = letter_data.as_bytes().to_vec();
-            let voffset = {
-                    (self.metric.ascent as i32 - (glyph_height * self.size) as i32)
-            };
             let letter = Letter{
                 width: glyph_width,
                 height : glyph_height,
                 data: Box::new(letter_data),
-                voffset,
                 bounding_box: pixel_bounding_box,
+                hmetric: glyph.unpositioned().h_metrics(),
             };
-            println!("{}",letter.voffset);
             letters.push(letter);
         }
         let path = Path::new("/").to_path_buf();
@@ -159,7 +195,7 @@ impl DrawableBuilder for TextBuilder{
             path,
             pos: self.pos,
             size: self.size,
-            metric: self.metric,
+            vmetric: self.vmetric,
             spacing: self.spacing,
         })
     }
@@ -173,7 +209,7 @@ impl Drawable for Text{
         for letter in self.letters.iter_mut(){
             let width = letter.width;
             let height  = letter.height;
-            let pos = sdl2::rect::Rect::new((self.pos.0 + offset as i32), self.pos.1 + letter.bounding_box.min.y, width * self.size, height * self.size);
+            let pos = sdl2::rect::Rect::new((self.pos.0 + offset as i32), self.pos.1 + letter.bounding_box.min.y - (self.vmetric.ascent + self.vmetric.descent) as i32, width * self.size, height * self.size);
             let surf = Surface::from_data(
                 &mut letter.data,
                 width,

@@ -29,11 +29,11 @@ fn init(core: &mut renrust::core::Core){
     let animated = animated.framespeed(20);
     textbuilder.text("Pierre pue de la gueule !");
     textbuilder.size(1);
-    textbuilder.pos((0,0));
-    textbuilder.color(RGBA::<u8>::new(255,0,255,255));
+    textbuilder.spacing(3);
+    textbuilder.pos((30,20));
+    textbuilder.color(RGBA::<u8>::new(162,210,223,255));
 
     /* display */
-    renrust::show(core, &animated, 1);
     renrust::show(core, &textbuilder, 2);
 }
 
