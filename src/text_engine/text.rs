@@ -15,13 +15,14 @@ use crate::graphics::{Drawable,DrawableBuilder,Sizeable};
 const DEFAULT_HEIGHT : f32 = 40.0;
 const DEFAULT_WIDTH : f32 = 20.0;
 const DEFAULT_SIZE : f32 = 1.0;
-const DEFAULT_QUALITY : f32 = 70.0;
+const DEFAULT_SCALE : f32 = 70.0;
 const DEFAULT_COLOR : RGBA<u8> = BLACK;
 const DEFAULT_POS : (i32,i32) = (0,0);
 const DEFAULT_FONT_POS : (f32,f32) = (0.0,0.0);
 const DEFAULT_TEXT : &str = "";
 const DEFAULT_SPACING : u32 = 0;
 const DEFAULT_SPACE_SIZE : u32 = 20;
+const NO_BOUNDING_BOX : rusttype::Rect<i32> = rusttype::Rect::<i32>{min: rusttype::Point{x:0,y:0,},max: rusttype::Point{x:1,y:1}};
 const DEFAULT_DISPLAY : (i32,i32,u32,u32) = (0,0,300,400);
 const RGBA_BPP : u32 = 4;
 const BLACK : RGBA<u8> = RGBA::<u8>{r:0,g:0,b:0,a:255,};
@@ -35,7 +36,7 @@ pub struct TextBuilder{
     text: String,
     size: f32,
     color: RGBA<u8>,
-    quality: Scale,
+    scale: Scale,
     vmetric: VMetrics,
     spacing: u32,
     display: Rect,
@@ -66,15 +67,15 @@ pub struct Text{
 impl TextBuilder{
     pub fn new(font: &Path)->TextBuilder{
         let font = Font::from_bytes(read(font).unwrap()).unwrap();
-        let quality = Scale::uniform(DEFAULT_QUALITY);
-        let vmetric = font.v_metrics(quality);
+        let scale = Scale::uniform(DEFAULT_SCALE);
+        let vmetric = font.v_metrics(scale);
         TextBuilder{
             font,
             text: DEFAULT_TEXT.to_string(),
             color: DEFAULT_COLOR,
             size: DEFAULT_SIZE,
             spacing: DEFAULT_SPACING,
-            quality,
+            scale,
             vmetric,
             display: {
                 Rect::new(DEFAULT_DISPLAY.0,DEFAULT_DISPLAY.1,DEFAULT_DISPLAY.2,DEFAULT_DISPLAY.3)
@@ -93,10 +94,10 @@ impl TextBuilder{
     pub fn text(&mut self, text: &str){
         self.text = text.to_string();
     }
-    pub fn quality(&mut self, quality: f32){
-        let quality = Scale::uniform(quality);
-        let vmetric = self.font.v_metrics(quality);
-        self.quality = quality;
+    pub fn scale(&mut self, scale: f32){
+        let scale = Scale::uniform(scale);
+        let vmetric = self.font.v_metrics(scale);
+        self.scale = scale;
         self.vmetric = vmetric;
     }
     pub fn spacing(&mut self, spacing: u32){
@@ -108,7 +109,7 @@ impl DrawableBuilder for TextBuilder{
     fn build(&self)->Box<dyn Drawable>{
         let mut letters = vec![];
         /* point is placing the baseline */
-        let glyphs : Vec<_> = self.font.layout(self.text.as_str(), self.quality, point(DEFAULT_FONT_POS.0,DEFAULT_FONT_POS.1 + self.vmetric.ascent)).collect();
+        let glyphs : Vec<_> = self.font.layout(self.text.as_str(), self.scale, point(DEFAULT_FONT_POS.0,DEFAULT_FONT_POS.1 + self.vmetric.ascent)).collect();
         let glyphs_height = (self.vmetric.ascent - self.vmetric.descent).ceil() as u32;
 
         for glyph in glyphs{
@@ -121,7 +122,7 @@ impl DrawableBuilder for TextBuilder{
                 glyph_width = (pixel_bounding_box.max.x - pixel_bounding_box.min.x) as u32;
                 glyph_height = (pixel_bounding_box.max.y - pixel_bounding_box.min.y) as u32;
             } else {
-                pixel_bounding_box = rusttype::Rect::<i32>{min: rusttype::Point{x:0,y:0,},max: rusttype::Point{x:1,y:1}};
+                pixel_bounding_box = NO_BOUNDING_BOX;
                 glyph_height = DEFAULT_SPACE_SIZE;
                 glyph_width = DEFAULT_SPACE_SIZE;
             }
@@ -219,14 +220,6 @@ impl Sizeable for TextBuilder{
     fn height(&mut self,h:u32){}
     fn get_width(&self)->u32{4}
     fn get_height(&self)->u32{4}
-}
-
-impl Positionable for TextBuilder{
-    fn center(&mut self, viewport: Rect){}
-    fn downcenter(&mut self, viewport: Rect){}
-    fn get_pos(&self)->(i32,i32){(0,0)}
-    fn x_perc(&mut self, perc: f32, viewport: Rect){}
-    fn y_perc(&mut self, perc: f32, viewport: Rect){}
 }
 
 impl Sizeable for Letter{

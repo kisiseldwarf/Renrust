@@ -210,6 +210,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d515b1f41455adea1313a4a2ac8a8a477634fbae63cc6100e3aebb207ce61558"
 
 [[package]]
+name = "lipsum"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "58e4464067d52ca040073c04dfd9185658ec8a32236b857b5e1577f9d19f9d5a"
+dependencies = [
+ "rand",
+]
+
+[[package]]
 name = "lzw"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -480,6 +489,7 @@ name = "renrust"
 version = "0.1.0"
 dependencies = [
  "image",
+ "lipsum",
  "rgb",
  "rusttype",
  "sdl2",

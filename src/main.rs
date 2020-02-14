@@ -1,10 +1,12 @@
 extern crate renrust;
+extern crate lipsum;
 
 use renrust::*;
 use renrust::graphics::sprite::SpriteBuilder;
 use renrust::graphics::animated::AnimatedBuilder;
 use renrust::graphics::{Positionable,Sizeable};
 use rgb::*;
+use lipsum::lipsum;
 // use renrust::text_engine::*;
 // use renrust::text_engine::text::*;
 use std::path::*;
@@ -22,7 +24,7 @@ fn init(core: &mut renrust::core::Core){
     let vp = core.canvas.viewport();
     let mut animated = renrust::graphics::animated::load(Path::new("/home/kisis/animations"));
     let mut dialogbox = renrust::graphics::sprite::SpriteBuilder::new(Path::new("/home/kisis/renrust/dialogbox.bmp"));
-    let mut textbuilder = renrust::text_engine::text::TextBuilder::new(Path::new("/home/kisis/renrust/optimus/OptimusPrinceps.ttf"));
+    let mut textbuilder = renrust::text_engine::text::TextBuilder::new(Path::new("/home/kisis/renrust/optimus/OptimusPrincepsSemiBold.ttf"));
 
     /* style */
     animated.center(vp);
@@ -31,8 +33,8 @@ fn init(core: &mut renrust::core::Core){
     dialogbox.downcenter(vp);
     let rect = sdl2::rect::Rect::new(60,450,630,400);
     textbuilder.display(rect);
-    textbuilder.quality(40.0);
-    textbuilder.text("Objection votre honneur !");
+    textbuilder.scale(26.0);
+    textbuilder.text(&lipsum(25));
     textbuilder.color(RGBA::<u8>::new(0,0,0,255));
 
     /* display */
