@@ -2,7 +2,7 @@ mod character;
 pub mod renderer;
 pub mod core;
 pub mod graphics;
-pub mod text_engine;
+pub mod text;
 
 extern crate sdl2;
 extern crate rusttype;
@@ -13,7 +13,7 @@ use sdl2::event::*;
 use sdl2::keyboard::*;
 use crate::graphics::*;
 use crate::core::*;
-use crate::text_engine::*;
+use crate::text::*;
 use std::time::{Duration, Instant};
 
 const SCENE_LAYER : usize = 0;
@@ -69,7 +69,8 @@ fn mainloop(mut core: Core){
             }
         }
 
-        //Boucle principale
+        // -- Boucle principale --
+
         core.canvas.clear(); //On efface tout
         (core.update_func)(&mut core); //On appelle la fonction d'update logique du jeu
 
@@ -79,7 +80,10 @@ fn mainloop(mut core: Core){
                 img.as_mut().draw(&mut core.canvas, core.elapsed);
             }
         }
+
+        //on affiche le canvas
         core.canvas.present();
+
         //timer
         core.elapsed = timer.elapsed().as_millis();
         timer = Instant::now();

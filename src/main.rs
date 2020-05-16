@@ -23,8 +23,9 @@ fn init(core: &mut renrust::core::Core){
     /* declaration & load */
     let vp = core.canvas.viewport();
     let mut animated = renrust::graphics::animated::load(Path::new("/home/kisis/animations"));
+    let mut background = renrust::graphics::sprite::SpriteBuilder::new(Path::new("/home/kisis/renrust/bg.bmp"));
     let mut dialogbox = renrust::graphics::sprite::SpriteBuilder::new(Path::new("/home/kisis/renrust/dialogbox.bmp"));
-    let mut textbuilder = renrust::text_engine::text::TextBuilder::new(Path::new("/home/kisis/renrust/optimus/OptimusPrincepsSemiBold.ttf"));
+    let mut textbuilder = renrust::text::text::TextBuilder::new(Path::new("/home/kisis/renrust/optimus/OptimusPrincepsSemiBold.ttf"));
 
     /* style */
     animated.center(vp);
@@ -38,6 +39,7 @@ fn init(core: &mut renrust::core::Core){
     textbuilder.color(RGBA::<u8>::new(0,0,0,255));
 
     /* display */
+    renrust::scene(core, &background);
     renrust::show(core, &animated, 1);
     renrust::show(core, &dialogbox, 2);
     renrust::show(core, &textbuilder, 3);
